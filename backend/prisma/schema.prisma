@@ -1,0 +1,205 @@
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "debian-openssl-3.0.x", "debian-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            Int            @id @default(autoincrement())
+  fullName      String
+  email         String         @unique
+  phone         String         @unique
+  password      String
+  avatar        String?
+  isActive      Boolean        @default(true)
+  isVerified    Boolean        @default(false)
+  otp           String?
+  otpExpiresAt  DateTime?
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  addresses     Address[]
+  bookings      Booking[]
+  messages      Message[]
+  notifications Notification[]
+  reviews       Review[]
+}
+
+model Admin {
+  id        Int      @id @default(autoincrement())
+  fullName  String
+  email     String   @unique
+  password  String
+  role      String   @default("admin")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Provider {
+  id            Int               @id @default(autoincrement())
+  fullName      String
+  email         String            @unique
+  phone         String            @unique
+  password      String
+  avatar        String?
+  bio           String?
+  isActive      Boolean           @default(true)
+  isVerified    Boolean           @default(false)
+  rating        Float             @default(0)
+  totalReviews  Int               @default(0)
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+  otp           String?
+  otpExpiresAt  DateTime?
+  bookings      Booking[]
+  earnings      Earning[]
+  messages      Message[]
+  notifications Notification[]
+  services      ProviderService[]
+  reviews       Review[]
+}
+
+model Category {
+  id          Int       @id @default(autoincrement())
+  name        String    @unique
+  icon        String?
+  description String?
+  isActive    Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  services    Service[]
+}
+
+model Service {
+  id          Int               @id @default(autoincrement())
+  name        String
+  description String?
+  basePrice   Float
+  image       String?
+  isActive    Boolean           @default(true)
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+  categoryId  Int
+  bookings    Booking[]
+  providers   ProviderService[]
+  category    Category          @relation(fields: [categoryId], references: [id])
+}
+
+model ProviderService {
+  id         Int      @id @default(autoincrement())
+  price      Float
+  createdAt  DateTime @default(now())
+  providerId Int
+  serviceId  Int
+  provider   Provider @relation(fields: [providerId], references: [id])
+  service    Service  @relation(fields: [serviceId], references: [id])
+}
+
+model Address {
+  id        Int       @id @default(autoincrement())
+  label     String
+  address   String
+  city      String
+  lat       Float?
+  lng       Float?
+  isDefault Boolean   @default(false)
+  createdAt DateTime  @default(now())
+  userId    Int
+  user      User      @relation(fields: [userId], references: [id])
+  bookings  Booking[]
+}
+
+model Booking {
+  id          Int           @id @default(autoincrement())
+  status      BookingStatus @default(PENDING)
+  totalPrice  Float
+  notes       String?
+  scheduledAt DateTime
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  userId      Int
+  providerId  Int
+  serviceId   Int
+  addressId   Int
+  address     Address       @relation(fields: [addressId], references: [id])
+  provider    Provider      @relation(fields: [providerId], references: [id])
+  service     Service       @relation(fields: [serviceId], references: [id])
+  user        User          @relation(fields: [userId], references: [id])
+  payment     Payment?
+  review      Review?
+}
+
+model Payment {
+  id              Int           @id @default(autoincrement())
+  amount          Float
+  status          PaymentStatus @default(PENDING)
+  method          String
+  stripePaymentId String?
+  createdAt       DateTime      @default(now())
+  bookingId       Int           @unique
+  booking         Booking       @relation(fields: [bookingId], references: [id])
+}
+
+model Review {
+  id         Int      @id @default(autoincrement())
+  rating     Int
+  comment    String?
+  createdAt  DateTime @default(now())
+  userId     Int
+  providerId Int
+  bookingId  Int      @unique
+  booking    Booking  @relation(fields: [bookingId], references: [id])
+  provider   Provider @relation(fields: [providerId], references: [id])
+  user       User     @relation(fields: [userId], references: [id])
+}
+
+model Message {
+  id         Int       @id @default(autoincrement())
+  content    String
+  isRead     Boolean   @default(false)
+  createdAt  DateTime  @default(now())
+  senderId   Int
+  senderType String
+  userId     Int?
+  providerId Int?
+  provider   Provider? @relation(fields: [providerId], references: [id])
+  user       User?     @relation(fields: [userId], references: [id])
+}
+
+model Notification {
+  id         Int       @id @default(autoincrement())
+  title      String
+  body       String
+  isRead     Boolean   @default(false)
+  type       String
+  createdAt  DateTime  @default(now())
+  userId     Int?
+  providerId Int?
+  provider   Provider? @relation(fields: [providerId], references: [id])
+  user       User?     @relation(fields: [userId], references: [id])
+}
+
+model Earning {
+  id         Int      @id @default(autoincrement())
+  amount     Float
+  createdAt  DateTime @default(now())
+  providerId Int
+  provider   Provider @relation(fields: [providerId], references: [id])
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  ONGOING
+  COMPLETED
+  CANCELLED
+}
+
+enum PaymentStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  REFUNDED
+}
