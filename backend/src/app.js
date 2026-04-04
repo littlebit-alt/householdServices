@@ -11,6 +11,7 @@ const bookingRoutes = require('./routes/booking.routes');
 const addressRoutes = require('./routes/address.routes');
 const reviewRoutes = require('./routes/review.routes');
 const adminRoutes = require('./routes/admin.routes');
+const authRoutes = require('./routes/auth');
 
 const app = express();
 
