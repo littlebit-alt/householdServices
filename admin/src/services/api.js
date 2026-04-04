@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: 'https://household-services-66kp.onrender.com/api',
+  baseURL: 'https://householdservices.onrender.com/api',
 });
 
 api.interceptors.request.use((config) => {
