@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Users, Briefcase, CalendarCheck, DollarSign, Clock, CheckCircle, XCircle, TrendingUp } from 'lucide-react';
 import api from '../services/api';
 
-const StatCard = ({ icon: Icon, label, value, sub, color }) => (
+const StatCard = ({ icon: Icon, label, value, color }) => (
   <div className="bg-[#161b22] border border-[#2d333b] rounded-lg p-5 hover:border-[#444c56] transition-colors">
     <div className="flex items-start justify-between mb-3">
       <div className={`p-2 rounded-md ${color}`}>
@@ -12,7 +12,6 @@ const StatCard = ({ icon: Icon, label, value, sub, color }) => (
     </div>
     <p className="text-2xl font-bold text-[#cdd9e5]">{value}</p>
     <p className="text-xs text-[#8b949e] mt-1">{label}</p>
-    {sub && <p className="text-xs text-[#20c9c9] mt-0.5">{sub}</p>}
   </div>
 );
 
@@ -27,14 +26,26 @@ const statusColor = (s) => ({
 export default function Dashboard() {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
 
   useEffect(() => {
-    api.get('/admin/dashboard').then(r => { setData(r.data); setLoading(false); }).catch(() => setLoading(false));
+    api.get('/admin/dashboard')
+      .then(r => { setData(r.data); setLoading(false); })
+      .catch(() => { setError(true); setLoading(false); });
   }, []);
 
   if (loading) return (
     <div className="flex items-center justify-center h-full">
       <div className="w-5 h-5 border-2 border-[#20c9c9] border-t-transparent rounded-full animate-spin"/>
+    </div>
+  );
+
+  if (error || !data) return (
+    <div className="flex flex-col items-center justify-center h-full gap-3">
+      <p className="text-[#8b949e]">Failed to load dashboard</p>
+      <button onClick={() => window.location.reload()} className="px-4 py-2 text-sm bg-[#20c9c9] bg-opacity-10 border border-[#20c9c9] border-opacity-30 text-[#20c9c9] rounded-md">
+        Retry
+      </button>
     </div>
   );
 
