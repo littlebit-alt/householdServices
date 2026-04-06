@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Users, Briefcase, CalendarCheck, DollarSign, Clock, CheckCircle, XCircle, TrendingUp } from 'lucide-react';
 import api from '../services/api';
+import toast from 'react-hot-toast';
 
 const StatCard = ({ icon: Icon, label, value, color }) => (
   <div className="bg-[#161b22] border border-[#2d333b] rounded-lg p-5 hover:border-[#444c56] transition-colors">
@@ -10,7 +11,7 @@ const StatCard = ({ icon: Icon, label, value, color }) => (
       </div>
       <TrendingUp size={12} className="text-[#20c9c9] opacity-60" />
     </div>
-    <p className="text-2xl font-bold text-[#cdd9e5]">{value}</p>
+    <p className="text-2xl font-bold text-[#cdd9e5]">{value !== undefined ? value : 0}</p>
     <p className="text-xs text-[#8b949e] mt-1">{label}</p>
   </div>
 );
@@ -26,12 +27,27 @@ const statusColor = (s) => ({
 export default function Dashboard() {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(false);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    api.get('/admin/dashboard')
-      .then(r => { setData(r.data); setLoading(false); })
-      .catch(() => { setError(true); setLoading(false); });
+    const fetchDashboard = async () => {
+      try {
+        console.log('Fetching dashboard data...');
+        const response = await api.get('/admin/dashboard');
+        console.log('Dashboard response:', response.data);
+        setData(response.data);
+        setError(null);
+      } catch (err) {
+        console.error('Dashboard error:', err);
+        console.error('Error response:', err.response);
+        setError(err.response?.data?.message || err.message || 'Failed to load dashboard');
+        toast.error(err.response?.data?.message || 'Failed to load dashboard');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDashboard();
   }, []);
 
   if (loading) return (
@@ -40,12 +56,21 @@ export default function Dashboard() {
     </div>
   );
 
-  if (error || !data) return (
-    <div className="flex flex-col items-center justify-center h-full gap-3">
-      <p className="text-[#8b949e]">Failed to load dashboard</p>
-      <button onClick={() => window.location.reload()} className="px-4 py-2 text-sm bg-[#20c9c9] bg-opacity-10 border border-[#20c9c9] border-opacity-30 text-[#20c9c9] rounded-md">
+  if (error) return (
+    <div className="flex flex-col items-center justify-center h-full gap-3 p-6">
+      <p className="text-red-400">Error: {error}</p>
+      <button 
+        onClick={() => window.location.reload()} 
+        className="px-4 py-2 text-sm bg-[#20c9c9] bg-opacity-10 border border-[#20c9c9] border-opacity-30 text-[#20c9c9] rounded-md"
+      >
         Retry
       </button>
+    </div>
+  );
+
+  if (!data || !data.stats) return (
+    <div className="flex items-center justify-center h-full">
+      <p className="text-[#8b949e]">No data available</p>
     </div>
   );
 
@@ -66,16 +91,16 @@ export default function Dashboard() {
 
       {/* Stats */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard icon={Users} label="Total Users" value={stats.totalUsers} color="bg-[#20c9c9]" />
-        <StatCard icon={Briefcase} label="Providers" value={stats.totalProviders} color="bg-purple-400" />
-        <StatCard icon={CalendarCheck} label="Bookings" value={stats.totalBookings} color="bg-blue-400" />
-        <StatCard icon={DollarSign} label="Revenue" value={`$${stats.totalRevenue}`} color="bg-[#20c9c9]" />
+        <StatCard icon={Users} label="Total Users" value={stats.totalUsers || 0} color="bg-[#20c9c9]" />
+        <StatCard icon={Briefcase} label="Providers" value={stats.totalProviders || 0} color="bg-purple-400" />
+        <StatCard icon={CalendarCheck} label="Bookings" value={stats.totalBookings || 0} color="bg-blue-400" />
+        <StatCard icon={DollarSign} label="Revenue" value={`$${stats.totalRevenue || 0}`} color="bg-[#20c9c9]" />
       </div>
 
       <div className="grid grid-cols-3 gap-4">
-        <StatCard icon={Clock} label="Pending" value={stats.pendingBookings} color="bg-yellow-400" />
-        <StatCard icon={CheckCircle} label="Completed" value={stats.completedBookings} color="bg-[#20c9c9]" />
-        <StatCard icon={XCircle} label="Cancelled" value={stats.cancelledBookings} color="bg-red-400" />
+        <StatCard icon={Clock} label="Pending" value={stats.pendingBookings || 0} color="bg-yellow-400" />
+        <StatCard icon={CheckCircle} label="Completed" value={stats.completedBookings || 0} color="bg-[#20c9c9]" />
+        <StatCard icon={XCircle} label="Cancelled" value={stats.cancelledBookings || 0} color="bg-red-400" />
       </div>
 
       {/* Tables */}
@@ -84,21 +109,25 @@ export default function Dashboard() {
         <div className="bg-[#161b22] border border-[#2d333b] rounded-lg overflow-hidden">
           <div className="px-5 py-3 border-b border-[#2d333b] flex items-center justify-between">
             <h2 className="text-sm font-medium text-[#cdd9e5]">Recent Bookings</h2>
-            <span className="text-xs text-[#8b949e]">{recentBookings.length} entries</span>
+            <span className="text-xs text-[#8b949e]">{recentBookings?.length || 0} entries</span>
           </div>
           <div className="divide-y divide-[#21262d]">
-            {recentBookings.map((b) => (
-              <div key={b.id} className="px-5 py-3 flex items-center justify-between hover:bg-[#1c2128] transition-colors">
-                <div>
-                  <p className="text-sm text-[#cdd9e5] font-medium">{b.user.fullName}</p>
-                  <p className="text-xs text-[#8b949e]">{b.service.name}</p>
+            {recentBookings && recentBookings.length > 0 ? (
+              recentBookings.map((b) => (
+                <div key={b.id} className="px-5 py-3 flex items-center justify-between hover:bg-[#1c2128] transition-colors">
+                  <div>
+                    <p className="text-sm text-[#cdd9e5] font-medium">{b.user?.fullName || 'Unknown'}</p>
+                    <p className="text-xs text-[#8b949e]">{b.service?.name || 'Unknown'}</p>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-sm font-semibold text-[#20c9c9]">${b.totalPrice || 0}</p>
+                    <p className={`text-xs font-medium ${statusColor(b.status)}`}>{b.status || 'UNKNOWN'}</p>
+                  </div>
                 </div>
-                <div className="text-right">
-                  <p className="text-sm font-semibold text-[#20c9c9]">${b.totalPrice}</p>
-                  <p className={`text-xs font-medium ${statusColor(b.status)}`}>{b.status}</p>
-                </div>
-              </div>
-            ))}
+              ))
+            ) : (
+              <div className="px-5 py-8 text-center text-[#8b949e]">No recent bookings</div>
+            )}
           </div>
         </div>
 
@@ -106,20 +135,24 @@ export default function Dashboard() {
         <div className="bg-[#161b22] border border-[#2d333b] rounded-lg overflow-hidden">
           <div className="px-5 py-3 border-b border-[#2d333b] flex items-center justify-between">
             <h2 className="text-sm font-medium text-[#cdd9e5]">Recent Users</h2>
-            <span className="text-xs text-[#8b949e]">{recentUsers.length} entries</span>
+            <span className="text-xs text-[#8b949e]">{recentUsers?.length || 0} entries</span>
           </div>
           <div className="divide-y divide-[#21262d]">
-            {recentUsers.map((u) => (
-              <div key={u.id} className="px-5 py-3 flex items-center gap-3 hover:bg-[#1c2128] transition-colors">
-                <div className="w-7 h-7 rounded-full bg-[#20c9c9] bg-opacity-10 border border-[#20c9c9] border-opacity-20 flex items-center justify-center text-xs font-bold text-[#20c9c9]">
-                  {u.fullName.charAt(0)}
+            {recentUsers && recentUsers.length > 0 ? (
+              recentUsers.map((u) => (
+                <div key={u.id} className="px-5 py-3 flex items-center gap-3 hover:bg-[#1c2128] transition-colors">
+                  <div className="w-7 h-7 rounded-full bg-[#20c9c9] bg-opacity-10 border border-[#20c9c9] border-opacity-20 flex items-center justify-center text-xs font-bold text-[#20c9c9]">
+                    {u.fullName?.charAt(0) || '?'}
+                  </div>
+                  <div>
+                    <p className="text-sm text-[#cdd9e5] font-medium">{u.fullName || 'Unknown'}</p>
+                    <p className="text-xs text-[#8b949e]">{u.email || 'No email'}</p>
+                  </div>
                 </div>
-                <div>
-                  <p className="text-sm text-[#cdd9e5] font-medium">{u.fullName}</p>
-                  <p className="text-xs text-[#8b949e]">{u.email}</p>
-                </div>
-              </div>
-            ))}
+              ))
+            ) : (
+              <div className="px-5 py-8 text-center text-[#8b949e]">No recent users</div>
+            )}
           </div>
         </div>
       </div>
