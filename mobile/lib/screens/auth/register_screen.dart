@@ -15,6 +15,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _emailController = TextEditingController();
   final _phoneController = TextEditingController();
   final _passwordController = TextEditingController();
+  bool _obscure = true;
 
   Future<void> _register() async {
     final auth = context.read<AuthService>();
@@ -28,9 +29,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
     if (result['success']) {
       context.go('/verify-otp?userId=${result['userId']}');
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(result['message'] ?? 'Registration failed')),
-      );
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(result['message'] ?? 'Registration failed'),
+        backgroundColor: const Color(0xFF1A1A1A),
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      ));
     }
   }
 
@@ -38,70 +42,93 @@ class _RegisterScreenState extends State<RegisterScreen> {
   Widget build(BuildContext context) {
     final auth = context.watch<AuthService>();
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: const Color(0xFF0A0A0A),
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24),
+          padding: const EdgeInsets.all(28),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const SizedBox(height: 40),
-              const Icon(Icons.home_rounded, size: 40, color: Color(0xFF06B6D4)),
-              const SizedBox(height: 24),
-              const Text('Create account',
-                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+              GestureDetector(
+                onTap: () => context.go('/login'),
+                child: Container(
+                  width: 40,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF1A1A1A),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: Colors.white.withOpacity(0.06)),
+                  ),
+                  child: Icon(Icons.arrow_back_ios_new_rounded, size: 16, color: Colors.white.withOpacity(0.7)),
+                ),
+              ),
+              const SizedBox(height: 28),
+              const Text('Create account', style: TextStyle(color: Colors.white, fontSize: 32, fontWeight: FontWeight.bold, letterSpacing: -0.5)),
               const SizedBox(height: 8),
-              const Text('Sign up to get started',
-                  style: TextStyle(color: Colors.grey)),
-              const SizedBox(height: 32),
-              ...[
-                (_nameController, 'Full Name', false),
-                (_emailController, 'Email', false),
-                (_phoneController, 'Phone', false),
-                (_passwordController, 'Password', true),
-              ].map((field) => Padding(
-                    padding: const EdgeInsets.only(bottom: 16),
+              Text('Join thousands of happy customers', style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 16)),
+              const SizedBox(height: 40),
+
+              _buildField('Full Name', _nameController, Icons.person_outline, false),
+              const SizedBox(height: 16),
+              _buildField('Email', _emailController, Icons.email_outlined, false),
+              const SizedBox(height: 16),
+              _buildField('Phone', _phoneController, Icons.phone_outlined, false),
+              const SizedBox(height: 16),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('Password', style: TextStyle(color: Colors.white.withOpacity(0.6), fontSize: 13, fontWeight: FontWeight.w500)),
+                  const SizedBox(height: 8),
+                  Container(
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF1A1A1A),
+                      borderRadius: BorderRadius.circular(14),
+                      border: Border.all(color: Colors.white.withOpacity(0.06)),
+                    ),
                     child: TextField(
-                      controller: field.$1,
-                      obscureText: field.$3,
+                      controller: _passwordController,
+                      obscureText: _obscure,
+                      style: const TextStyle(color: Colors.white, fontSize: 15),
                       decoration: InputDecoration(
-                        labelText: field.$2,
-                        border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12)),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide:
-                              const BorderSide(color: Color(0xFF06B6D4)),
+                        prefixIcon: Icon(Icons.lock_outline, color: Colors.white.withOpacity(0.3), size: 20),
+                        suffixIcon: IconButton(
+                          icon: Icon(_obscure ? Icons.visibility_outlined : Icons.visibility_off_outlined, color: Colors.white.withOpacity(0.3), size: 20),
+                          onPressed: () => setState(() => _obscure = !_obscure),
                         ),
+                        border: InputBorder.none,
+                        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
                       ),
                     ),
-                  )),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 32),
+
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
                   onPressed: auth.isLoading ? null : _register,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF06B6D4),
-                    foregroundColor: Colors.white,
+                    backgroundColor: const Color(0xFF00D4FF),
+                    foregroundColor: Colors.black,
                     padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12)),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                    elevation: 0,
                   ),
                   child: auth.isLoading
-                      ? const CircularProgressIndicator(color: Colors.white)
-                      : const Text('Register',
-                          style: TextStyle(
-                              fontSize: 16, fontWeight: FontWeight.w600)),
+                      ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.black, strokeWidth: 2))
+                      : const Text('Create Account', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                 ),
               ),
+              const SizedBox(height: 20),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Text('Already have an account?'),
-                  TextButton(
-                    onPressed: () => context.go('/login'),
-                    child: const Text('Sign In',
-                        style: TextStyle(color: Color(0xFF06B6D4))),
+                  Text('Already have an account? ', style: TextStyle(color: Colors.white.withOpacity(0.4))),
+                  GestureDetector(
+                    onTap: () => context.go('/login'),
+                    child: const Text('Sign In', style: TextStyle(color: Color(0xFF00D4FF), fontWeight: FontWeight.w600)),
                   ),
                 ],
               ),
@@ -109,6 +136,33 @@ class _RegisterScreenState extends State<RegisterScreen> {
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildField(String label, TextEditingController controller, IconData icon, bool obscure) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(label, style: TextStyle(color: Colors.white.withOpacity(0.6), fontSize: 13, fontWeight: FontWeight.w500)),
+        const SizedBox(height: 8),
+        Container(
+          decoration: BoxDecoration(
+            color: const Color(0xFF1A1A1A),
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(color: Colors.white.withOpacity(0.06)),
+          ),
+          child: TextField(
+            controller: controller,
+            obscureText: obscure,
+            style: const TextStyle(color: Colors.white, fontSize: 15),
+            decoration: InputDecoration(
+              prefixIcon: Icon(icon, color: Colors.white.withOpacity(0.3), size: 20),
+              border: InputBorder.none,
+              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

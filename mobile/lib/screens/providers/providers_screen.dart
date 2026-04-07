@@ -13,6 +13,7 @@ class ProvidersScreen extends StatefulWidget {
 class _ProvidersScreenState extends State<ProvidersScreen> {
   List providers = [];
   bool loading = true;
+  final _searchController = TextEditingController();
   String search = '';
 
   @override
@@ -24,186 +25,122 @@ class _ProvidersScreenState extends State<ProvidersScreen> {
   Future<void> _fetchProviders() async {
     try {
       final res = await ApiService.get('/providers');
-      setState(() {
-        providers = res['providers'];
-        loading = false;
-      });
+      setState(() { providers = res['providers']; loading = false; });
     } catch (e) {
       setState(() => loading = false);
     }
   }
 
   List get filtered => providers.where((p) =>
-    p['fullName'].toLowerCase().contains(search.toLowerCase())).toList();
+    p['fullName'].toString().toLowerCase().contains(search.toLowerCase())).toList();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
+      backgroundColor: const Color(0xFF0A0A0A),
       body: SafeArea(
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Header
             Padding(
-              padding: const EdgeInsets.all(20),
+              padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
               child: Row(
                 children: [
                   GestureDetector(
                     onTap: () => context.go('/home'),
-                    child: const Icon(Icons.arrow_back_ios_new_rounded,
-                        size: 20, color: Color(0xFF1E293B)),
-                  ),
-                  const SizedBox(width: 12),
-                  const Text(
-                    'Service Providers',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFF1E293B),
+                    child: Container(
+                      width: 40, height: 40,
+                      decoration: BoxDecoration(color: const Color(0xFF1A1A1A), borderRadius: BorderRadius.circular(12), border: Border.all(color: Colors.white.withOpacity(0.06))),
+                      child: Icon(Icons.arrow_back_ios_new_rounded, size: 16, color: Colors.white.withOpacity(0.7)),
                     ),
                   ),
+                  const SizedBox(width: 16),
+                  const Text('Find Providers', style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold)),
                 ],
               ),
             ),
 
             // Search
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
+              padding: const EdgeInsets.fromLTRB(20, 16, 20, 16),
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: const Color(0xFFE2E8F0)),
-                ),
-                child: Row(
-                  children: [
-                    const Icon(Icons.search, color: Colors.grey, size: 20),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: TextField(
-                        onChanged: (v) => setState(() => search = v),
-                        decoration: const InputDecoration(
-                          hintText: 'Search providers...',
-                          hintStyle:
-                              TextStyle(color: Colors.grey, fontSize: 14),
-                          border: InputBorder.none,
-                          contentPadding:
-                              EdgeInsets.symmetric(vertical: 14),
-                        ),
-                      ),
-                    ),
-                  ],
+                decoration: BoxDecoration(color: const Color(0xFF1A1A1A), borderRadius: BorderRadius.circular(16), border: Border.all(color: Colors.white.withOpacity(0.06))),
+                child: TextField(
+                  controller: _searchController,
+                  onChanged: (v) => setState(() => search = v),
+                  style: const TextStyle(color: Colors.white, fontSize: 15),
+                  decoration: InputDecoration(
+                    prefixIcon: Icon(Icons.search_rounded, color: Colors.white.withOpacity(0.3), size: 20),
+                    hintText: 'Search providers...',
+                    hintStyle: TextStyle(color: Colors.white.withOpacity(0.25), fontSize: 14),
+                    border: InputBorder.none,
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                  ),
                 ),
               ),
             ),
-            const SizedBox(height: 16),
 
-            // Providers List
+            // List
             Expanded(
               child: loading
-                  ? const Center(
-                      child: CircularProgressIndicator(
-                          color: Color(0xFF06B6D4)))
+                  ? const Center(child: CircularProgressIndicator(color: Color(0xFF00D4FF), strokeWidth: 2))
                   : filtered.isEmpty
-                      ? const Center(
-                          child: Text('No providers found',
-                              style: TextStyle(color: Colors.grey)))
+                      ? Center(child: Text('No providers found', style: TextStyle(color: Colors.white.withOpacity(0.3))))
                       : ListView.builder(
-                          padding:
-                              const EdgeInsets.symmetric(horizontal: 20),
+                          padding: const EdgeInsets.symmetric(horizontal: 20),
                           itemCount: filtered.length,
                           itemBuilder: (context, index) {
-                            final provider = filtered[index];
+                            final p = filtered[index];
                             return GestureDetector(
-                              onTap: () => context
-                                  .go('/providers/${provider['id']}'),
+                              onTap: () => context.go('/providers/${p['id']}'),
                               child: Container(
                                 margin: const EdgeInsets.only(bottom: 12),
                                 padding: const EdgeInsets.all(16),
                                 decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.circular(12),
-                                  border: Border.all(
-                                      color: const Color(0xFFE2E8F0)),
+                                  color: const Color(0xFF141414),
+                                  borderRadius: BorderRadius.circular(20),
+                                  border: Border.all(color: Colors.white.withOpacity(0.05)),
                                 ),
                                 child: Row(
                                   children: [
-                                    // Avatar
                                     Container(
-                                      width: 52,
-                                      height: 52,
+                                      width: 56, height: 56,
                                       decoration: BoxDecoration(
-                                        color: const Color(0xFF06B6D4)
-                                            .withOpacity(0.1),
-                                        borderRadius:
-                                            BorderRadius.circular(14),
+                                        borderRadius: BorderRadius.circular(18),
+                                        gradient: const LinearGradient(colors: [Color(0xFF00D4FF), Color(0xFF0055AA)]),
                                       ),
                                       child: Center(
-                                        child: Text(
-                                          provider['fullName']
-                                              .substring(0, 1),
-                                          style: const TextStyle(
-                                            fontSize: 22,
-                                            fontWeight: FontWeight.bold,
-                                            color: Color(0xFF06B6D4),
-                                          ),
-                                        ),
+                                        child: Text(p['fullName'].toString().substring(0, 1),
+                                          style: const TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold)),
                                       ),
                                     ),
-                                    const SizedBox(width: 12),
-                                    // Info
+                                    const SizedBox(width: 14),
                                     Expanded(
                                       child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
+                                        crossAxisAlignment: CrossAxisAlignment.start,
                                         children: [
-                                          Text(
-                                            provider['fullName'],
-                                            style: const TextStyle(
-                                              fontWeight: FontWeight.w600,
-                                              fontSize: 15,
-                                              color: Color(0xFF1E293B),
-                                            ),
-                                          ),
+                                          Text(p['fullName'], style: const TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.w600)),
                                           const SizedBox(height: 4),
                                           Row(
                                             children: [
-                                              const Icon(Icons.star_rounded,
-                                                  size: 14,
-                                                  color: Color(0xFFF59E0B)),
+                                              const Icon(Icons.star_rounded, size: 14, color: Color(0xFFFFD600)),
                                               const SizedBox(width: 4),
-                                              Text(
-                                                '${provider['rating']} (${provider['totalReviews']} reviews)',
-                                                style: const TextStyle(
-                                                    fontSize: 12,
-                                                    color: Colors.grey),
-                                              ),
+                                              Text('${p['rating']} · ${p['totalReviews']} reviews',
+                                                style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 12)),
                                             ],
                                           ),
                                         ],
                                       ),
                                     ),
-                                    // Verified badge
-                                    if (provider['isVerified'])
+                                    if (p['isVerified'])
                                       Container(
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 8, vertical: 4),
+                                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                                         decoration: BoxDecoration(
-                                          color: const Color(0xFF06B6D4)
-                                              .withOpacity(0.1),
-                                          borderRadius:
-                                              BorderRadius.circular(8),
+                                          color: const Color(0xFF00D4FF).withOpacity(0.1),
+                                          borderRadius: BorderRadius.circular(20),
+                                          border: Border.all(color: const Color(0xFF00D4FF).withOpacity(0.2)),
                                         ),
-                                        child: const Text(
-                                          'Verified',
-                                          style: TextStyle(
-                                            fontSize: 11,
-                                            color: Color(0xFF06B6D4),
-                                            fontWeight: FontWeight.w600,
-                                          ),
-                                        ),
+                                        child: const Text('Verified', style: TextStyle(color: Color(0xFF00D4FF), fontSize: 11, fontWeight: FontWeight.w600)),
                                       ),
                                   ],
                                 ),
@@ -215,7 +152,7 @@ class _ProvidersScreenState extends State<ProvidersScreen> {
           ],
         ),
       ),
-      bottomNavigationBar: const BottomNav(currentIndex: 0),
+      bottomNavigationBar: const BottomNav(currentIndex: 1),
     );
   }
 }

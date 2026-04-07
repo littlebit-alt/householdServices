@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import '../../services/auth_service.dart';
 import '../../services/api_service.dart';
+import '../../widgets/bottom_nav.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -15,7 +16,14 @@ class _HomeScreenState extends State<HomeScreen> {
   List categories = [];
   List services = [];
   bool loading = true;
-  int _currentIndex = 0;
+
+  final List<Map<String, dynamic>> categoryGradients = [
+    {'colors': [const Color(0xFF00D4FF), const Color(0xFF0066FF)], 'emoji': '🧹'},
+    {'colors': [const Color(0xFF00FFB3), const Color(0xFF00AA77)], 'emoji': '🔧'},
+    {'colors': [const Color(0xFFFFD600), const Color(0xFFFF8800)], 'emoji': '⚡'},
+    {'colors': [const Color(0xFFFF6B9D), const Color(0xFFCC0066)], 'emoji': '🎨'},
+    {'colors': [const Color(0xFFB44FFF), const Color(0xFF7700CC)], 'emoji': '🔨'},
+  ];
 
   @override
   void initState() {
@@ -40,230 +48,291 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final auth = context.watch<AuthService>();
-    return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
-      body: SafeArea(
-        child: loading
-            ? const Center(child: CircularProgressIndicator(color: Color(0xFF06B6D4)))
-            : SingleChildScrollView(
-                padding: const EdgeInsets.all(20),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Header
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Hello, ${auth.user?['fullName']?.split(' ')[0] ?? 'there'} 👋',
-                              style: const TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                                color: Color(0xFF1E293B),
-                              ),
-                            ),
-                            const Text(
-                              'What service do you need?',
-                              style: TextStyle(fontSize: 13, color: Colors.grey),
-                            ),
-                          ],
-                        ),
-                        Container(
-                          width: 40,
-                          height: 40,
-                          decoration: BoxDecoration(
-                            color: const Color(0xFF06B6D4).withOpacity(0.1),
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: const Icon(Icons.notifications_outlined,
-                              color: Color(0xFF06B6D4), size: 20),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 20),
+    final firstName = auth.user?['fullName']?.toString().split(' ')[0] ?? 'there';
 
-                    // Search Bar
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: const Color(0xFFE2E8F0)),
-                      ),
-                      child: const Row(
+    return Scaffold(
+      backgroundColor: const Color(0xFF0A0A0A),
+      body: loading
+          ? const Center(child: CircularProgressIndicator(color: Color(0xFF00D4FF), strokeWidth: 2))
+          : CustomScrollView(
+              slivers: [
+                // App Bar
+                SliverToBoxAdapter(
+                  child: SafeArea(
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
+                      child: Row(
                         children: [
-                          Icon(Icons.search, color: Colors.grey, size: 20),
-                          SizedBox(width: 10),
                           Expanded(
-                            child: TextField(
-                              decoration: InputDecoration(
-                                hintText: 'Search services...',
-                                hintStyle: TextStyle(color: Colors.grey, fontSize: 14),
-                                border: InputBorder.none,
-                                contentPadding: EdgeInsets.symmetric(vertical: 14),
-                              ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text('Good morning,', style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 13)),
+                                const SizedBox(height: 2),
+                                Text(firstName, style: const TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold, letterSpacing: -0.5)),
+                              ],
+                            ),
+                          ),
+                          Container(
+                            width: 42,
+                            height: 42,
+                            decoration: BoxDecoration(
+                              color: const Color(0xFF1A1A1A),
+                              borderRadius: BorderRadius.circular(14),
+                              border: Border.all(color: Colors.white.withOpacity(0.06)),
+                            ),
+                            child: Stack(
+                              children: [
+                                Center(child: Icon(Icons.notifications_outlined, color: Colors.white.withOpacity(0.7), size: 20)),
+                                Positioned(top: 8, right: 8, child: Container(width: 7, height: 7, decoration: const BoxDecoration(color: Color(0xFF00D4FF), shape: BoxShape.circle))),
+                              ],
                             ),
                           ),
                         ],
                       ),
                     ),
-                    const SizedBox(height: 24),
+                  ),
+                ),
 
-                    // Categories
-                    const Text(
-                      'Categories',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xFF1E293B),
+                // Search Bar
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
+                    child: GestureDetector(
+                      onTap: () => context.go('/providers'),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF1A1A1A),
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(color: Colors.white.withOpacity(0.06)),
+                        ),
+                        child: Row(
+                          children: [
+                            Icon(Icons.search_rounded, color: Colors.white.withOpacity(0.3), size: 20),
+                            const SizedBox(width: 10),
+                            Text('Search services, providers...', style: TextStyle(color: Colors.white.withOpacity(0.3), fontSize: 14)),
+                          ],
+                        ),
                       ),
                     ),
-                    const SizedBox(height: 12),
-                    SizedBox(
-                      height: 90,
-                      child: ListView.builder(
-                        scrollDirection: Axis.horizontal,
-                        itemCount: categories.length,
-                        itemBuilder: (context, index) {
-                          final cat = categories[index];
-                          return 
-                          GestureDetector(
-                             onTap: () => context.go('/providers'),
-                            child: Container(
-                              margin: const EdgeInsets.only(right: 12),
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 16, vertical: 12),
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(12),
-                                border: Border.all(color: const Color(0xFFE2E8F0)),
-                              ),
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Text(cat['icon'] ?? '🔧',
-                                      style: const TextStyle(fontSize: 24)),
-                                  const SizedBox(height: 4),
-                                  Text(
-                                    cat['name'],
-                                    style: const TextStyle(
-                                        fontSize: 11,
-                                        color: Color(0xFF1E293B),
-                                        fontWeight: FontWeight.w500),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          );
-                        },
-                      ),
-                    ),
-                    const SizedBox(height: 24),
+                  ),
+                ),
 
-                    // Services
-                    const Text(
-                      'Popular Services',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xFF1E293B),
+                // Featured Banner
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(20, 24, 20, 0),
+                    child: Container(
+                      height: 160,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(20),
+                        gradient: const LinearGradient(
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                          colors: [Color(0xFF00D4FF), Color(0xFF0055AA)],
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 12),
-                    ListView.builder(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemCount: services.length,
-                      itemBuilder: (context, index) {
-                        final service = services[index];
-                        return
-                         GestureDetector (
-                           onTap: () => context.go('/providers'),
-                           child: Container(
-                            margin: const EdgeInsets.only(bottom: 12),
-                            padding: const EdgeInsets.all(16),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(12),
-                              border: Border.all(color: const Color(0xFFE2E8F0)),
-                            ),
-                            child: Row(
+                      child: Stack(
+                        children: [
+                          Positioned(right: -20, top: -20,
+                            child: Container(width: 150, height: 150,
+                              decoration: BoxDecoration(shape: BoxShape.circle, color: Colors.white.withOpacity(0.06)))),
+                          Positioned(right: 20, bottom: -30,
+                            child: Container(width: 100, height: 100,
+                              decoration: BoxDecoration(shape: BoxShape.circle, color: Colors.white.withOpacity(0.06)))),
+                          Padding(
+                            padding: const EdgeInsets.all(24),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Container(
-                                  width: 48,
-                                  height: 48,
+                                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                                  decoration: BoxDecoration(color: Colors.white.withOpacity(0.2), borderRadius: BorderRadius.circular(20)),
+                                  child: const Text('NEW', style: TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 1)),
+                                ),
+                                const SizedBox(height: 10),
+                                const Text('Book Your First\nService Free!', style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold, height: 1.2)),
+                                const SizedBox(height: 12),
+                                GestureDetector(
+                                  onTap: () => context.go('/providers'),
+                                  child: Container(
+                                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                                    decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(20)),
+                                    child: const Text('Explore Now', style: TextStyle(color: Color(0xFF0055AA), fontSize: 12, fontWeight: FontWeight.bold)),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+
+                // Categories Title
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(20, 28, 20, 16),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text('Categories', style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
+                        GestureDetector(
+                          onTap: () => context.go('/providers'),
+                          child: Text('See all', style: TextStyle(color: const Color(0xFF00D4FF), fontSize: 13)),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+
+                // Categories horizontal scroll
+                SliverToBoxAdapter(
+                  child: SizedBox(
+                    height: 110,
+                    child: ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      itemCount: categories.length,
+                      itemBuilder: (context, index) {
+                        final cat = categories[index];
+                        final gradient = categoryGradients[index % categoryGradients.length];
+                        return GestureDetector(
+                          onTap: () => context.go('/providers'),
+                          child: Container(
+                            width: 80,
+                            margin: const EdgeInsets.only(right: 12),
+                            child: Column(
+                              children: [
+                                Container(
+                                  width: 64,
+                                  height: 64,
                                   decoration: BoxDecoration(
-                                    color: const Color(0xFF06B6D4).withOpacity(0.1),
-                                    borderRadius: BorderRadius.circular(12),
+                                    borderRadius: BorderRadius.circular(20),
+                                    gradient: LinearGradient(
+                                      begin: Alignment.topLeft,
+                                      end: Alignment.bottomRight,
+                                      colors: gradient['colors'] as List<Color>,
+                                    ),
                                   ),
                                   child: Center(
                                     child: Text(
-                                      service['category']['icon'] ?? '🔧',
-                                      style: const TextStyle(fontSize: 22),
+                                      gradient['emoji'] as String,
+                                      style: const TextStyle(fontSize: 28),
                                     ),
                                   ),
                                 ),
-                                const SizedBox(width: 12),
-                                Expanded(
+                                const SizedBox(height: 8),
+                                Text(
+                                  cat['name'],
+                                  style: TextStyle(color: Colors.white.withOpacity(0.7), fontSize: 11, fontWeight: FontWeight.w500),
+                                  textAlign: TextAlign.center,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ),
+
+                // Popular Services Title
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(20, 28, 20, 16),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text('Popular Services', style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
+                        Text('${services.length} available', style: TextStyle(color: Colors.white.withOpacity(0.3), fontSize: 13)),
+                      ],
+                    ),
+                  ),
+                ),
+
+                // Services grid
+                SliverPadding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  sliver: SliverGrid(
+                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2,
+                      crossAxisSpacing: 12,
+                      mainAxisSpacing: 12,
+                      childAspectRatio: 0.85,
+                    ),
+                    delegate: SliverChildBuilderDelegate(
+                      (context, index) {
+                        final service = services[index];
+                        final gradient = categoryGradients[index % categoryGradients.length];
+                        return GestureDetector(
+                          onTap: () => context.go('/providers'),
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: const Color(0xFF141414),
+                              borderRadius: BorderRadius.circular(20),
+                              border: Border.all(color: Colors.white.withOpacity(0.05)),
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Container(
+                                  height: 100,
+                                  decoration: BoxDecoration(
+                                    borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+                                    gradient: LinearGradient(
+                                      begin: Alignment.topLeft,
+                                      end: Alignment.bottomRight,
+                                      colors: (gradient['colors'] as List<Color>).map((c) => c.withOpacity(0.3)).toList(),
+                                    ),
+                                  ),
+                                  child: Center(
+                                    child: Text(gradient['emoji'] as String, style: const TextStyle(fontSize: 40)),
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.all(12),
                                   child: Column(
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
                                       Text(
                                         service['name'],
-                                        style: const TextStyle(
-                                          fontWeight: FontWeight.w600,
-                                          fontSize: 14,
-                                          color: Color(0xFF1E293B),
-                                        ),
+                                        style: const TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.w600),
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
                                       ),
-                                      const SizedBox(height: 2),
+                                      const SizedBox(height: 4),
                                       Text(
                                         service['category']['name'],
-                                        style: const TextStyle(
-                                            fontSize: 12, color: Colors.grey),
+                                        style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 11),
+                                      ),
+                                      const SizedBox(height: 8),
+                                      Text(
+                                        '\$${service['basePrice']}',
+                                        style: const TextStyle(color: Color(0xFF00D4FF), fontSize: 15, fontWeight: FontWeight.bold),
                                       ),
                                     ],
                                   ),
                                 ),
-                                Text(
-                                  '\$${service['basePrice']}',
-                                  style: const TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 15,
-                                    color: Color(0xFF06B6D4),
-                                  ),
-                                ),
                               ],
                             ),
-                                                   ),
-                         );
+                          ),
+                        );
                       },
+                      childCount: services.length,
                     ),
-                  ],
+                  ),
                 ),
-              ),
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _currentIndex,
-        onTap: (index) {
-          setState(() => _currentIndex = index);
-          if (index == 1) context.go('/bookings');
-          if (index == 2) context.go('/profile');
-        },
-        selectedItemColor: const Color(0xFF06B6D4),
-        unselectedItemColor: Colors.grey,
-        type: BottomNavigationBarType.fixed,
-        elevation: 0,
-        backgroundColor: Colors.white,
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home_outlined), label: 'Home'),
-          BottomNavigationBarItem(icon: Icon(Icons.calendar_today_outlined), label: 'Bookings'),
-          BottomNavigationBarItem(icon: Icon(Icons.person_outline), label: 'Profile'),
-        ],
-      ),
+
+                const SliverToBoxAdapter(child: SizedBox(height: 100)),
+              ],
+            ),
+      bottomNavigationBar: const BottomNav(currentIndex: 0),
     );
   }
 }
