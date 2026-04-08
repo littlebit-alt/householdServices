@@ -15,6 +15,5 @@ router.post('/login', login);
 router.post('/forgot-password', forgotPassword);
 router.post('/reset-password', resetPassword);
 router.post('/admin/login', adminLogin);
-router.post('/login', login); 
 
 module.exports = router;
