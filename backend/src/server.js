@@ -1,3 +1,6 @@
+
+require('../instrument');
+
 if (process.env.NODE_ENV !== 'production') {
   require('dotenv').config();
 }
@@ -10,4 +13,5 @@ app.listen(PORT, () => {
   console.log(`🚀 Server is running on http://localhost:${PORT}`);
   console.log(`🌍 Environment: ${process.env.NODE_ENV}`);
   console.log(`🗄️ Database: ${process.env.DATABASE_URL ? 'Connected' : 'NOT SET'}`);
+  console.log(`📡 Sentry: ${process.env.SENTRY_DSN ? 'Initialized' : 'Not configured'}`);
 });
