@@ -1,182 +1,113 @@
 const prisma = require('../config/prisma');
-const bcrypt = require('bcryptjs');
 
-// ===== GET DASHBOARD STATS =====
-const getDashboardStats = async (req, res) => {
+// ===== GET USER ADDRESSES =====
+const getAddresses = async (req, res) => {
   try {
-    // Run all queries at the same time for speed
-    const [
-      totalUsers,
-      totalProviders,
-      totalBookings,
-      pendingBookings,
-      completedBookings,
-      cancelledBookings,
-      totalServices,
-      totalCategories,
-      recentBookings,
-      recentUsers,
-    ] = await Promise.all([
-      prisma.user.count(),
-      prisma.provider.count(),
-      prisma.booking.count(),
-      prisma.booking.count({ where: { status: 'PENDING' } }),
-      prisma.booking.count({ where: { status: 'COMPLETED' } }),
-      prisma.booking.count({ where: { status: 'CANCELLED' } }),
-      prisma.service.count(),
-      prisma.category.count(),
-      prisma.booking.findMany({
-        take: 5,
-        orderBy: { createdAt: 'desc' },
-        include: {
-          user: { select: { fullName: true } },
-          provider: { select: { fullName: true } },
-          service: { select: { name: true } }
-        }
-      }),
-      prisma.user.findMany({
-        take: 5,
-        orderBy: { createdAt: 'desc' },
-        select: {
-          id: true,
-          fullName: true,
-          email: true,
-          createdAt: true
-        }
-      }),
-    ]);
+    const userId = req.user.id;
 
-    // Calculate total revenue
-    const revenueResult = await prisma.booking.aggregate({
-      where: { status: 'COMPLETED' },
-      _sum: { totalPrice: true }
+    const addresses = await prisma.address.findMany({
+      where: { userId },
+      orderBy: { isDefault: 'desc' }
     });
 
-    const totalRevenue = revenueResult._sum.totalPrice || 0;
-
-    res.json({
-      stats: {
-        totalUsers,
-        totalProviders,
-        totalBookings,
-        pendingBookings,
-        completedBookings,
-        cancelledBookings,
-        totalServices,
-        totalCategories,
-        totalRevenue,
-      },
-      recentBookings,
-      recentUsers,
-    });
-
+    res.json({ addresses });
   } catch (error) {
-    console.error('Dashboard stats error:', error);
+    console.error('Get addresses error:', error);
     res.status(500).json({ message: 'Server error' });
   }
 };
 
-// ===== GET ALL USERS (Admin) =====
-const getUsers = async (req, res) => {
+// ===== CREATE ADDRESS =====
+const createAddress = async (req, res) => {
   try {
-    const users = await prisma.user.findMany({
-      select: {
-        id: true,
-        fullName: true,
-        email: true,
-        phone: true,
-        avatar: true,
-        isActive: true,
-        isVerified: true,
-        createdAt: true,
-        _count: { select: { bookings: true } }
-      },
-      orderBy: { createdAt: 'desc' }
-    });
+    const userId = req.user.id;
+    const { label, address, city, lat, lng, isDefault } = req.body;
 
-    res.json({ users });
-  } catch (error) {
-    console.error('Get users error:', error);
-    res.status(500).json({ message: 'Server error' });
-  }
-};
-
-// ===== TOGGLE USER STATUS (Admin) =====
-const toggleUserStatus = async (req, res) => {
-  try {
-    const { id } = req.params;
-
-    const user = await prisma.user.findUnique({
-      where: { id: parseInt(id) }
-    });
-
-    if (!user) {
-      return res.status(404).json({ message: 'User not found' });
+    // If this is default, remove default from others
+    if (isDefault) {
+      await prisma.address.updateMany({
+        where: { userId },
+        data: { isDefault: false }
+      });
     }
 
-    const updated = await prisma.user.update({
+    const newAddress = await prisma.address.create({
+      data: {
+        userId,
+        label,
+        address,
+        city,
+        lat: lat ? parseFloat(lat) : null,
+        lng: lng ? parseFloat(lng) : null,
+        isDefault: isDefault || false
+      }
+    });
+
+    res.status(201).json({
+      message: 'Address created successfully!',
+      address: newAddress
+    });
+  } catch (error) {
+    console.error('Create address error:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+// ===== UPDATE ADDRESS =====
+const updateAddress = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const userId = req.user.id;
+    const { label, address, city, lat, lng, isDefault } = req.body;
+
+    if (isDefault) {
+      await prisma.address.updateMany({
+        where: { userId },
+        data: { isDefault: false }
+      });
+    }
+
+    const updated = await prisma.address.update({
       where: { id: parseInt(id) },
-      data: { isActive: !user.isActive }
+      data: {
+        label,
+        address,
+        city,
+        lat: lat ? parseFloat(lat) : null,
+        lng: lng ? parseFloat(lng) : null,
+        isDefault: isDefault || false
+      }
     });
 
     res.json({
-      message: `User ${updated.isActive ? 'activated' : 'deactivated'} successfully!`,
-      user: updated
+      message: 'Address updated successfully!',
+      address: updated
     });
   } catch (error) {
-    console.error('Toggle user status error:', error);
+    console.error('Update address error:', error);
     res.status(500).json({ message: 'Server error' });
   }
 };
 
-// ===== DELETE USER (Admin) =====
-const deleteUser = async (req, res) => {
+// ===== DELETE ADDRESS =====
+const deleteAddress = async (req, res) => {
   try {
     const { id } = req.params;
 
-    await prisma.user.delete({
+    await prisma.address.delete({
       where: { id: parseInt(id) }
     });
 
-    res.json({ message: 'User deleted successfully!' });
+    res.json({ message: 'Address deleted successfully!' });
   } catch (error) {
-    console.error('Delete user error:', error);
-    res.status(500).json({ message: 'Server error' });
-  }
-};
-
-// ===== CHANGE ADMIN PASSWORD =====
-const changePassword = async (req, res) => {
-  try {
-    const { currentPassword, newPassword } = req.body;
-    const adminId = req.admin.id;
-
-    const admin = await prisma.admin.findUnique({
-      where: { id: adminId }
-    });
-
-    const isMatch = await bcrypt.compare(currentPassword, admin.password);
-    if (!isMatch) {
-      return res.status(400).json({ message: 'Current password is incorrect' });
-    }
-
-    const hashed = await bcrypt.hash(newPassword, 12);
-    await prisma.admin.update({
-      where: { id: adminId },
-      data: { password: hashed }
-    });
-
-    res.json({ message: 'Password changed successfully!' });
-  } catch (error) {
-    console.error('Change password error:', error);
+    console.error('Delete address error:', error);
     res.status(500).json({ message: 'Server error' });
   }
 };
 
 module.exports = {
-  getDashboardStats,
-  getUsers,
-  toggleUserStatus,
-  deleteUser,
-  changePassword
+  getAddresses,
+  createAddress,
+  updateAddress,
+  deleteAddress
 };
