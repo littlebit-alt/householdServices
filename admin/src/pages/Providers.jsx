@@ -10,11 +10,16 @@ export default function Providers() {
   const [showModal, setShowModal] = useState(false);
   const [form, setForm] = useState({ fullName: '', email: '', phone: '', password: '', bio: '' });
 
-  const fetchProviders = async () => {
-    try { const r = await api.get('/providers'); setProviders(r.data.providers); }
-    catch { toast.error('Failed to fetch providers'); }
-    finally { setLoading(false); }
-  };
+ const fetchProviders = async () => {
+  try {
+    const r = await api.get('/providers');
+    setProviders(r.data.providers);
+  } catch {
+    toast.error('Failed to fetch providers');
+  } finally {
+    setLoading(false);
+  }
+};
 
   useEffect(() => { fetchProviders(); }, []);
 

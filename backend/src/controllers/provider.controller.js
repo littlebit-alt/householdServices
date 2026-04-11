@@ -24,9 +24,6 @@ const registerProvider = async (req, res) => {
 
     const hashedPassword = await bcrypt.hash(password, 12);
 
-    const otp = generateOTP();
-    const otpExpiresAt = new Date(Date.now() + 10 * 60 * 1000);
-
     const provider = await prisma.provider.create({
       data: {
         fullName,
@@ -34,19 +31,13 @@ const registerProvider = async (req, res) => {
         phone,
         password: hashedPassword,
         bio,
-        otp,
-        otpExpiresAt,
+        isVerified: false,
+        isActive: true,
       }
     });
 
-    try {
-      await sendOTPEmail(email, fullName, otp);
-    } catch (emailError) {
-      console.error('Email sending failed:', emailError.message);
-    }
-
     res.status(201).json({
-      message: 'Registration successful! Please check your email for the OTP.',
+      message: 'Provider created successfully!',
       providerId: provider.id
     });
 
