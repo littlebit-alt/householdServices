@@ -103,7 +103,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
-                        onPressed: () => context.go('/register'),
+                        onPressed: () => context.go('/role'),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: const Color(0xFF00D4FF),
                           foregroundColor: Colors.black,
@@ -116,7 +116,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     ),
                     const SizedBox(height: 12),
                     TextButton(
-                      onPressed: () => context.go('/login'),
+                      onPressed: () => context.go('/role'),
                       child: Text('Already have an account', style: TextStyle(color: Colors.white.withOpacity(0.5), fontSize: 14)),
                     ),
                   ] else

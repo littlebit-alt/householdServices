@@ -29,7 +29,15 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
     await Future.delayed(const Duration(seconds: 2));
     if (!mounted) return;
     final auth = context.read<AuthService>();
-    context.go(auth.isLoggedIn ? '/home' : '/onboarding');
+    if (auth.isLoggedIn) {
+      if (auth.isProvider) {
+        context.go('/provider/home');
+      } else {
+        context.go('/home');
+      }
+    } else {
+      context.go('/onboarding');
+    }
   }
 
   @override
@@ -48,8 +56,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Container(
-                  width: 80,
-                  height: 80,
+                  width: 80, height: 80,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(24),
                     gradient: const LinearGradient(
