@@ -44,14 +44,17 @@ class _LoginScreenState extends State<LoginScreen> {
             children: [
               const SizedBox(height: 40),
               Container(
-                width: 48,
-                height: 48,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(14),
-                  gradient: const LinearGradient(colors: [Color(0xFF00D4FF), Color(0xFF0099CC)]),
-                ),
-                child: const Icon(Icons.home_rounded, color: Colors.white, size: 24),
-              ),
+  width: 56,
+  height: 56,
+  decoration: BoxDecoration(
+    borderRadius: BorderRadius.circular(16),
+    boxShadow: [BoxShadow(color: const Color(0xFF00D4FF).withOpacity(0.2), blurRadius: 20)],
+  ),
+  child: ClipRRect(
+    borderRadius: BorderRadius.circular(16),
+    child: Image.asset('lib/asset/logo.png', fit: BoxFit.cover),
+  ),
+),
               const SizedBox(height: 28),
               const Text('Welcome back', style: TextStyle(color: Colors.white, fontSize: 32, fontWeight: FontWeight.bold, letterSpacing: -0.5)),
               const SizedBox(height: 8),

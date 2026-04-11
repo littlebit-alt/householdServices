@@ -37,4 +37,4 @@ app.use('/api/provider-dashboard', providerDashboardRoutes);
 app.get('/', (req, res) => res.json({ message: '✅ Household Services API is running!' }));
 app.use((req, res) => res.status(404).json({ message: '❌ Route not found' }));
 
-module.exports = app;
+module.exports = app;a

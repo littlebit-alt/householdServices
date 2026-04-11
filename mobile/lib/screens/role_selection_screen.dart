@@ -16,13 +16,17 @@ class RoleSelectionScreen extends StatelessWidget {
             children: [
               const SizedBox(height: 40),
               Container(
-                width: 52, height: 52,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(16),
-                  gradient: const LinearGradient(colors: [Color(0xFF00D4FF), Color(0xFF0055AA)]),
-                ),
-                child: const Icon(Icons.home_rounded, color: Colors.white, size: 26),
-              ),
+  width: 60,
+  height: 60,
+  decoration: BoxDecoration(
+    borderRadius: BorderRadius.circular(18),
+    boxShadow: [BoxShadow(color: const Color(0xFF00D4FF).withOpacity(0.2), blurRadius: 20)],
+  ),
+  child: ClipRRect(
+    borderRadius: BorderRadius.circular(18),
+    child: Image.asset('lib/asset/logo.png', fit: BoxFit.cover),
+  ),
+),
               const SizedBox(height: 32),
               const Text('Who are\nyou?', style: TextStyle(color: Colors.white, fontSize: 40, fontWeight: FontWeight.bold, height: 1.1, letterSpacing: -1)),
               const SizedBox(height: 12),

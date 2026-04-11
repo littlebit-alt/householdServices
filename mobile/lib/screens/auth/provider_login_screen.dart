@@ -56,13 +56,17 @@ class _ProviderLoginScreenState extends State<ProviderLoginScreen> {
               ),
               const SizedBox(height: 32),
               Container(
-                width: 52, height: 52,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(16),
-                  gradient: const LinearGradient(colors: [Color(0xFF00FFB3), Color(0xFF00AA77)]),
-                ),
-                child: const Icon(Icons.home_repair_service_rounded, color: Colors.white, size: 26),
-              ),
+  width: 56,
+  height: 56,
+  decoration: BoxDecoration(
+    borderRadius: BorderRadius.circular(16),
+    boxShadow: [BoxShadow(color: const Color(0xFF00FFB3).withOpacity(0.2), blurRadius: 20)],
+  ),
+  child: ClipRRect(
+    borderRadius: BorderRadius.circular(16),
+    child: Image.asset('lib/asset/logo.png', fit: BoxFit.cover),
+  ),
+),
               const SizedBox(height: 24),
               const Text('Provider Login', style: TextStyle(color: Colors.white, fontSize: 32, fontWeight: FontWeight.bold, letterSpacing: -0.5)),
               const SizedBox(height: 8),

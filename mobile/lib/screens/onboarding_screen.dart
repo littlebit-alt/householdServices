@@ -53,15 +53,19 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Container(
-                          width: 120,
-                          height: 120,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(36),
-                            color: (page['color'] as Color).withOpacity(0.1),
-                            border: Border.all(color: (page['color'] as Color).withOpacity(0.2), width: 1),
-                          ),
-                          child: Icon(page['icon'] as IconData, size: 56, color: page['color'] as Color),
-                        ),
+  width: 120,
+  height: 120,
+  decoration: BoxDecoration(
+    borderRadius: BorderRadius.circular(36),
+    color: (page['color'] as Color).withOpacity(0.08),
+    border: Border.all(color: (page['color'] as Color).withOpacity(0.2), width: 1),
+    boxShadow: [BoxShadow(color: (page['color'] as Color).withOpacity(0.2), blurRadius: 30, spreadRadius: 2)],
+  ),
+  child: Padding(
+    padding: const EdgeInsets.all(20),
+    child: Image.asset('lib/asset/logo.png', fit: BoxFit.contain),
+  ),
+),
                         const SizedBox(height: 40),
                         Text(
                           page['title'] as String,

@@ -29,15 +29,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
     await Future.delayed(const Duration(seconds: 2));
     if (!mounted) return;
     final auth = context.read<AuthService>();
-    if (auth.isLoggedIn) {
-      if (auth.isProvider) {
-        context.go('/provider/home');
-      } else {
-        context.go('/home');
-      }
-    } else {
-      context.go('/onboarding');
-    }
+    context.go(auth.isLoggedIn ? '/home' : '/onboarding');
   }
 
   @override
@@ -55,23 +47,48 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
+                // 👇 UPDATED Logo Container with shadow
                 Container(
-                  width: 80, height: 80,
+                  width: 80,
+                  height: 80,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(24),
-                    gradient: const LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                      colors: [Color(0xFF00D4FF), Color(0xFF0099CC)],
-                    ),
-                    boxShadow: [BoxShadow(color: const Color(0xFF00D4FF).withOpacity(0.4), blurRadius: 30, spreadRadius: 5)],
+                    boxShadow: [
+                      BoxShadow(
+                        color: const Color(0xFF00D4FF).withOpacity(0.3),
+                        blurRadius: 30,
+                        spreadRadius: 5,
+                      ),
+                    ],
                   ),
-                  child: const Icon(Icons.home_rounded, size: 40, color: Colors.white),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(24),
+                    child: Image.asset(
+                      'lib/asset/logo.png',
+                      width: 80,
+                      height: 80,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
                 ),
                 const SizedBox(height: 20),
-                const Text('HouseServ', style: TextStyle(color: Colors.white, fontSize: 28, fontWeight: FontWeight.bold, letterSpacing: -0.5)),
+                const Text(
+                  'HouseServ',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 28,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: -0.5,
+                  ),
+                ),
                 const SizedBox(height: 6),
-                Text('Services at your fingertips', style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 14)),
+                Text(
+                  'Services at your fingertips',
+                  style: TextStyle(
+                    color: Colors.white.withOpacity(0.4),
+                    fontSize: 14,
+                  ),
+                ),
               ],
             ),
           ),

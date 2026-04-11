@@ -64,6 +64,19 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ),
               ),
               const SizedBox(height: 28),
+Container(
+  width: 56,
+  height: 56,
+  decoration: BoxDecoration(
+    borderRadius: BorderRadius.circular(16),
+    boxShadow: [BoxShadow(color: const Color(0xFF00D4FF).withOpacity(0.2), blurRadius: 20)],
+  ),
+  child: ClipRRect(
+    borderRadius: BorderRadius.circular(16),
+    child: Image.asset('lib/asset/logo.png', fit: BoxFit.cover),
+  ),
+),
+const SizedBox(height: 24),
               const Text('Create account', style: TextStyle(color: Colors.white, fontSize: 32, fontWeight: FontWeight.bold, letterSpacing: -0.5)),
               const SizedBox(height: 8),
               Text('Join thousands of happy customers', style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 16)),
