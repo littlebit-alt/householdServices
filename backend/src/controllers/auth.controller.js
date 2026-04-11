@@ -269,11 +269,41 @@ const adminLogin = async (req, res) => {
   }
 };
 
+// ===== PROVIDER LOGIN =====
+const providerLogin = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    const provider = await prisma.provider.findUnique({ where: { email } });
+    if (!provider) return res.status(400).json({ message: 'Invalid email or password' });
+    const isMatch = await bcrypt.compare(password, provider.password);
+    if (!isMatch) return res.status(400).json({ message: 'Invalid email or password' });
+    if (!provider.isActive) return res.status(400).json({ message: 'Account deactivated' });
+    const token = generateToken(provider.id, 'provider');
+    res.json({
+      message: 'Login successful!',
+      token,
+      provider: {
+        id: provider.id,
+        fullName: provider.fullName,
+        email: provider.email,
+        phone: provider.phone,
+        avatar: provider.avatar,
+        isVerified: provider.isVerified,
+        rating: provider.rating,
+        totalReviews: provider.totalReviews,
+      }
+    });
+  } catch (error) {
+    console.error('Provider login error:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+};  
 module.exports = {
   register,
   verifyOTP,
   login,
   forgotPassword,
   resetPassword,
-  adminLogin
+  adminLogin,
+    providerLogin
 };

@@ -329,7 +329,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ),
 
-                const SliverToBoxAdapter(child: SizedBox(height: 100)),
+                const SliverToBoxAdapter(child: SizedBox(height: 120)),
               ],
             ),
       bottomNavigationBar: const BottomNav(currentIndex: 0),
