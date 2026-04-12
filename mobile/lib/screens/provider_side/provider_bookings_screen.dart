@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../services/api_service.dart';
 import '../../widgets/provider_bottom_nav.dart';
+import '../../utils/snackbar.dart';
 
 class ProviderBookingsScreen extends StatefulWidget {
   const ProviderBookingsScreen({super.key});
@@ -39,14 +40,9 @@ class _ProviderBookingsScreenState extends State<ProviderBookingsScreen> with Si
     try {
       await ApiService.put('/provider-dashboard/bookings/$id/status', {'status': status});
       _fetchBookings();
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text('Status updated to $status'),
-        backgroundColor: const Color(0xFF1A1A1A),
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      ));
+      showSuccess(context, 'Status updated to $status');
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Failed to update')));
+      showError(context, 'Failed to update status');
     }
   }
 

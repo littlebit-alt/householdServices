@@ -23,6 +23,8 @@ import 'screens/provider_side/provider_bookings_screen.dart';
 import 'screens/provider_side/provider_profile_screen.dart';
 import 'screens/provider_side/provider_notifications_screen.dart';
 
+
+
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setSystemUIOverlayStyle(

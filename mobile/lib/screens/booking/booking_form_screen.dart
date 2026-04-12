@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../services/api_service.dart';
+import '../../utils/snackbar.dart';
 
 class BookingFormScreen extends StatefulWidget {
   final int providerId;
@@ -82,15 +83,11 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
 
   Future<void> _book() async {
     if (selectedAddressId == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please select an address')),
-      );
+      showError(context, 'Please select an address');
       return;
     }
     if (selectedDate == null || selectedTime == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please select date and time')),
-      );
+      showError(context, 'Please select date and time');
       return;
     }
 
@@ -113,15 +110,11 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
         'notes': _notesController.text.trim(),
       });
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Booking created successfully!')),
-      );
+     showSuccess(context, 'Booking created successfully!');
       context.go('/bookings');
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(e.toString())),
-      );
+      showError(context, e.toString().replaceAll('Exception: ', ''));
     } finally {
       setState(() => loading = false);
     }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../services/api_service.dart';
+import '../../utils/snackbar.dart'; // 👈 ADD THIS IMPORT
 
 class ForgotPasswordScreen extends StatefulWidget {
   const ForgotPasswordScreen({super.key});
@@ -20,15 +21,15 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
         'email': _emailController.text.trim(),
       });
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('OTP sent to your email!')),
-      );
+      
+      // 👇 REPLACED with showSuccess
+      showSuccess(context, 'OTP sent to your email!');
       context.go('/login');
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(e.toString())),
-      );
+      
+      // 👇 REPLACED with showError
+      showError(context, e.toString());
     } finally {
       setState(() => _loading = false);
     }
