@@ -22,7 +22,6 @@ class AuthService extends ChangeNotifier {
   bool get isProvider => _userType == 'provider';
 
   AuthService() {
-    ApiService.initialize();
     _loadFromStorage();
   }
 
@@ -33,7 +32,7 @@ class AuthService extends ChangeNotifier {
       _userType = prefs.getString('userType');
       final userData = prefs.getString('user');
       final providerData = prefs.getString('provider');
-      
+
       if (userData != null) {
         try {
           _user = Map<String, dynamic>.from(jsonDecode(userData));
@@ -41,7 +40,7 @@ class AuthService extends ChangeNotifier {
           debugPrint('Error parsing user data: $e');
         }
       }
-      
+
       if (providerData != null) {
         try {
           _provider = Map<String, dynamic>.from(jsonDecode(providerData));
@@ -49,7 +48,7 @@ class AuthService extends ChangeNotifier {
           debugPrint('Error parsing provider data: $e');
         }
       }
-      
+
       notifyListeners();
     } catch (e) {
       debugPrint('Error loading from storage: $e');
@@ -171,14 +170,18 @@ class AuthService extends ChangeNotifier {
       final res = await ApiService.post('/auth/register', {
         'fullName': data['fullName'],
         'email': data['email']?.trim(),
-        'phone': data['phone'],
+        'phone': data['phone']?.trim(), // fixed: trim phone like email
         'password': data['password'],
       });
 
       _error = null;
       notifyListeners();
       debugPrint('✅ Registration successful');
-      return {'success': true, 'userId': res['userId']};
+      return {
+        'success': true,
+        'userId': res['userId'],
+        'emailSent': res['emailSent'] ?? true, // forward email delivery status
+      };
 
     } catch (e) {
       _error = e.toString().replaceAll('Exception: ', '');
@@ -273,7 +276,7 @@ class AuthService extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final res = await ApiService.post('/auth/reset-password', {
+      await ApiService.post('/auth/reset-password', {
         'userId': userId,
         'otp': otp,
         'newPassword': newPassword,
@@ -299,7 +302,7 @@ class AuthService extends ChangeNotifier {
     _provider = null;
     _userType = null;
     _error = null;
-    
+
     try {
       final prefs = await SharedPreferences.getInstance();
       await prefs.clear();
@@ -307,7 +310,7 @@ class AuthService extends ChangeNotifier {
     } catch (e) {
       debugPrint('Error clearing preferences: $e');
     }
-    
+
     notifyListeners();
   }
 

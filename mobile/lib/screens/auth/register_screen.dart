@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
@@ -17,8 +18,59 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _phoneController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _obscure = true;
+  bool _showWarmingUp = false; // shown after 10s to hint at cold start
+  Timer? _warmingUpTimer;
+
+  @override
+  void dispose() {
+    _warmingUpTimer?.cancel();
+    _nameController.dispose();
+    _emailController.dispose();
+    _phoneController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
+  // ── Client-side validation ─────────────────────────────────────────────────
+  String? _validate() {
+    final name = _nameController.text.trim();
+    final email = _emailController.text.trim();
+    final phone = _phoneController.text.trim();
+    final password = _passwordController.text.trim();
+
+    if (name.isEmpty || email.isEmpty || phone.isEmpty || password.isEmpty) {
+      return 'Please fill in all fields';
+    }
+
+    final emailRegex = RegExp(r'^[^\s@]+@[^\s@]+\.[^\s@]+$');
+    if (!emailRegex.hasMatch(email)) {
+      return 'Please enter a valid email address';
+    }
+
+    if (phone.replaceAll(RegExp(r'\D'), '').length < 7) {
+      return 'Please enter a valid phone number';
+    }
+
+    if (password.length < 6) {
+      return 'Password must be at least 6 characters';
+    }
+
+    return null;
+  }
+  // ──────────────────────────────────────────────────────────────────────────
 
   Future<void> _register() async {
+    final validationError = _validate();
+    if (validationError != null) {
+      showError(context, validationError);
+      return;
+    }
+
+    // Start a timer — if the request takes more than 10s, show warming up hint
+    _warmingUpTimer = Timer(const Duration(seconds: 10), () {
+      if (mounted) setState(() => _showWarmingUp = true);
+    });
+
     final auth = context.read<AuthService>();
     final result = await auth.register({
       'fullName': _nameController.text.trim(),
@@ -26,11 +78,20 @@ class _RegisterScreenState extends State<RegisterScreen> {
       'phone': _phoneController.text.trim(),
       'password': _passwordController.text.trim(),
     });
+
+    // Cancel timer and hide warming up message regardless of outcome
+    _warmingUpTimer?.cancel();
+    if (mounted) setState(() => _showWarmingUp = false);
+
     if (!mounted) return;
+
     if (result['success']) {
+      if (result['emailSent'] == false) {
+        showError(context, 'Account created but email delivery failed. Please use resend OTP.');
+      }
       context.go('/verify-otp?userId=${result['userId']}');
     } else {
-      showError(context, result['message'] ?? 'Login failed');
+      showError(context, result['message'] ?? 'Registration failed');
     }
   }
 
@@ -60,19 +121,19 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ),
               ),
               const SizedBox(height: 28),
-Container(
-  width: 56,
-  height: 56,
-  decoration: BoxDecoration(
-    borderRadius: BorderRadius.circular(16),
-    boxShadow: [BoxShadow(color: const Color(0xFF00D4FF).withOpacity(0.2), blurRadius: 20)],
-  ),
-  child: ClipRRect(
-    borderRadius: BorderRadius.circular(16),
-    child: Image.asset('lib/asset/logo.png', fit: BoxFit.cover),
-  ),
-),
-const SizedBox(height: 24),
+              Container(
+                width: 56,
+                height: 56,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(16),
+                  boxShadow: [BoxShadow(color: const Color(0xFF00D4FF).withOpacity(0.2), blurRadius: 20)],
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(16),
+                  child: Image.asset('lib/asset/logo.png', fit: BoxFit.cover),
+                ),
+              ),
+              const SizedBox(height: 24),
               const Text('Create account', style: TextStyle(color: Colors.white, fontSize: 32, fontWeight: FontWeight.bold, letterSpacing: -0.5)),
               const SizedBox(height: 8),
               Text('Join thousands of happy customers', style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 16)),
@@ -130,6 +191,37 @@ const SizedBox(height: 24),
                       : const Text('Create Account', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                 ),
               ),
+
+              // Warming up hint — only visible after 10s of waiting
+              if (_showWarmingUp) ...[
+                const SizedBox(height: 16),
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF1A1A1A),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: const Color(0xFF00D4FF).withOpacity(0.2)),
+                  ),
+                  child: Row(
+                    children: [
+                      const SizedBox(
+                        width: 14,
+                        height: 14,
+                        child: CircularProgressIndicator(color: Color(0xFF00D4FF), strokeWidth: 2),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Text(
+                          'Server is warming up, please wait a moment…',
+                          style: TextStyle(color: Colors.white.withOpacity(0.5), fontSize: 13),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+
               const SizedBox(height: 20),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,

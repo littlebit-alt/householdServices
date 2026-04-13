@@ -6,11 +6,14 @@ import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ApiService {
+  // Render free tier can take 50-60s to cold start — give it 90s to be safe
+  static const Duration _timeout = Duration(seconds: 90);
+
   static final Dio _dio = Dio(BaseOptions(
     baseUrl: 'https://householdservices.onrender.com/api',
-    connectTimeout: const Duration(seconds: 30),
-    receiveTimeout: const Duration(seconds: 30),
-    sendTimeout: const Duration(seconds: 30),
+    connectTimeout: _timeout,
+    receiveTimeout: _timeout,
+    sendTimeout: _timeout,
     headers: {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
@@ -19,45 +22,9 @@ class ApiService {
 
   static Dio get dio => _dio;
 
-  static void initialize() {
-    // Configure for Android compatibility
-    _dio.httpClientAdapter = IOHttpClientAdapter(
-      createHttpClient: () {
-        final client = HttpClient();
-        // Handle SSL certificates on Android
-        client.badCertificateCallback = (X509Certificate cert, String host, int port) => true;
-        return client;
-      },
-    );
-
-    // Add logging interceptor
-    _dio.interceptors.clear();
-    _dio.interceptors.add(InterceptorsWrapper(
-      onRequest: (options, handler) {
-        debugPrint('➡️ ${options.method} ${options.uri}');
-        debugPrint('Headers: ${options.headers}');
-        if (options.data != null) {
-          debugPrint('Body: ${options.data}');
-        }
-        return handler.next(options);
-      },
-      onResponse: (response, handler) {
-        debugPrint('⬅️ ${response.statusCode} ${response.data}');
-        return handler.next(response);
-      },
-      onError: (error, handler) {
-        debugPrint('❌ ERROR: ${error.type}');
-        debugPrint('Message: ${error.message}');
-        if (error.response != null) {
-          debugPrint('Response: ${error.response?.data}');
-        }
-        if (error.error != null) {
-          debugPrint('Underlying: ${error.error}');
-        }
-        return handler.next(error);
-      },
-    ));
-  }
+  /// Returns true if the request took long enough to suggest a cold start.
+  /// UI can use this to show a "server is warming up" message.
+  static bool isLikelyColdStart(Duration elapsed) => elapsed.inSeconds >= 10;
 
   static Future<String?> _getToken() async {
     final prefs = await SharedPreferences.getInstance();
@@ -120,7 +87,7 @@ class ApiService {
       case DioExceptionType.connectionTimeout:
       case DioExceptionType.sendTimeout:
       case DioExceptionType.receiveTimeout:
-        return Exception('Connection timed out. Please try again.');
+        return Exception('The server is taking too long to respond. It may be starting up — please try again in a moment.');
       case DioExceptionType.badResponse:
         final statusCode = error.response?.statusCode;
         final data = error.response?.data;

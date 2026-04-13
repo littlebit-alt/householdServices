@@ -1,11 +1,32 @@
 const nodemailer = require('nodemailer');
 
+// EMAIL_PORT from env is always a string — parse it to int
+const EMAIL_PORT = parseInt(process.env.EMAIL_PORT, 10) || 587;
+
+// Port 465 = SSL (secure: true), anything else (587, 25) = STARTTLS (secure: false)
+const IS_SECURE = EMAIL_PORT === 465;
+
 const transporter = nodemailer.createTransport({
   host: process.env.EMAIL_HOST,
-  port: process.env.EMAIL_PORT,
+  port: EMAIL_PORT,
+  secure: IS_SECURE,
   auth: {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASS,
+  },
+  // Needed for some providers (e.g. Gmail, Outlook) that require TLS on port 587
+  tls: {
+    rejectUnauthorized: false,
+  },
+});
+
+// Verify SMTP connection at startup so misconfiguration is caught early
+transporter.verify((error) => {
+  if (error) {
+    console.error('❌ Email transporter failed to connect:', error.message);
+    console.error('   Check EMAIL_HOST, EMAIL_PORT, EMAIL_USER, EMAIL_PASS in your .env');
+  } else {
+    console.log('✅ Email transporter is ready');
   }
 });
 
@@ -25,7 +46,7 @@ const sendOTPEmail = async (email, fullName, otp) => {
         <p>This code expires in <strong>10 minutes</strong>.</p>
         <p>If you did not request this, please ignore this email.</p>
       </div>
-    `
+    `,
   });
 };
 

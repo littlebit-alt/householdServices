@@ -22,6 +22,25 @@ const register = async (req, res) => {
   try {
     const { fullName, email, phone, password } = req.body;
 
+    // ── Validation ──────────────────────────────────────────────────────────
+    if (!fullName || !email || !phone || !password) {
+      return res.status(400).json({ message: 'All fields are required' });
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return res.status(400).json({ message: 'Invalid email format' });
+    }
+
+    if (phone.replace(/\D/g, '').length < 7) {
+      return res.status(400).json({ message: 'Invalid phone number' });
+    }
+
+    if (password.length < 6) {
+      return res.status(400).json({ message: 'Password must be at least 6 characters' });
+    }
+    // ────────────────────────────────────────────────────────────────────────
+
     // Check if email already exists
     const existingUser = await prisma.user.findUnique({ where: { email } });
     if (existingUser) {
@@ -53,16 +72,21 @@ const register = async (req, res) => {
       }
     });
 
-   // Send OTP email
-try {
-  await sendOTPEmail(email, fullName, otp);
-} catch (emailError) {
-  console.error('Email sending failed:', emailError.message);
-  // Continue anyway - user is created but email failed
-}
+    // Send OTP email — track whether it succeeded
+    let emailSent = true;
+    try {
+      await sendOTPEmail(email, fullName, otp);
+    } catch (emailError) {
+      console.error('Email sending failed:', emailError.message);
+      emailSent = false;
+    }
+
     res.status(201).json({
-      message: 'Registration successful! Please check your email for the OTP.',
-      userId: user.id
+      message: emailSent
+        ? 'Registration successful! Please check your email for the OTP.'
+        : 'Account created but email delivery failed. Please use resend OTP.',
+      userId: user.id,
+      emailSent,
     });
 
   } catch (error) {
@@ -297,7 +321,8 @@ const providerLogin = async (req, res) => {
     console.error('Provider login error:', error);
     res.status(500).json({ message: 'Server error' });
   }
-};  
+};
+
 module.exports = {
   register,
   verifyOTP,
@@ -305,5 +330,5 @@ module.exports = {
   forgotPassword,
   resetPassword,
   adminLogin,
-    providerLogin
+  providerLogin
 };
