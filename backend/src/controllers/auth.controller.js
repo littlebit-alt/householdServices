@@ -54,7 +54,7 @@ const register = async (req, res) => {
     }
 
     // Hash password
-    const hashedPassword = await bcrypt.hash(password, 12);
+    const hashedPassword = await bcrypt.hash(password, 10);
 
     // Generate OTP
     const otp = generateOTP();
@@ -240,7 +240,7 @@ const resetPassword = async (req, res) => {
       return res.status(400).json({ message: 'OTP has expired' });
     }
 
-    const hashedPassword = await bcrypt.hash(newPassword, 12);
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
 
     await prisma.user.update({
       where: { id: user.id },

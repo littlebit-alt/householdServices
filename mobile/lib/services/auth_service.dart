@@ -10,6 +10,7 @@ class AuthService extends ChangeNotifier {
   Map<String, dynamic>? _provider;
   String? _userType;
   bool _isLoading = false;
+  bool _loaded = false;
   String? _error;
 
   String? get token => _token;
@@ -20,6 +21,7 @@ class AuthService extends ChangeNotifier {
   String? get error => _error;
   bool get isLoggedIn => _token != null;
   bool get isProvider => _userType == 'provider';
+   bool get loaded => _loaded;
 
   AuthService() {
     _loadFromStorage();
@@ -48,6 +50,7 @@ class AuthService extends ChangeNotifier {
           debugPrint('Error parsing provider data: $e');
         }
       }
+       _loaded = true;
 
       notifyListeners();
     } catch (e) {

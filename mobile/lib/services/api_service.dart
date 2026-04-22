@@ -10,7 +10,7 @@ class ApiService {
   static const Duration _timeout = Duration(seconds: 90);
 
   static final Dio _dio = Dio(BaseOptions(
-    baseUrl: 'https://householdservices.onrender.com/api',
+    baseUrl: 'http://localhost:5000/api',
     connectTimeout: _timeout,
     receiveTimeout: _timeout,
     sendTimeout: _timeout,

@@ -159,7 +159,7 @@ const changePassword = async (req, res) => {
       return res.status(400).json({ message: 'Current password is incorrect' });
     }
 
-    const hashed = await bcrypt.hash(newPassword, 12);
+    const hashed = await bcrypt.hash(newPassword, 10);
     await prisma.admin.update({
       where: { id: adminId },
       data: { password: hashed }

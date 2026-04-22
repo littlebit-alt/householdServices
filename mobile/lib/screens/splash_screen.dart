@@ -25,12 +25,29 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
     _navigate();
   }
 
-  Future<void> _navigate() async {
-    await Future.delayed(const Duration(seconds: 2));
-    if (!mounted) return;
-    final auth = context.read<AuthService>();
-    context.go(auth.isLoggedIn ? '/home' : '/onboarding');
+ Future<void> _navigate() async {
+  await Future.delayed(const Duration(seconds: 2));
+  if (!mounted) return;
+  
+  final auth = context.read<AuthService>();
+  
+  // Wait until storage is loaded
+  while (!auth.loaded) {
+    await Future.delayed(const Duration(milliseconds: 100));
   }
+  
+  if (!mounted) return;
+  
+  if (auth.isLoggedIn) {
+    if (auth.isProvider) {
+      context.go('/provider/home');
+    } else {
+      context.go('/home');
+    }
+  } else {
+    context.go('/onboarding');
+  }
+}
 
   @override
   void dispose() { _controller.dispose(); super.dispose(); }

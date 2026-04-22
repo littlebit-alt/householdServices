@@ -22,7 +22,7 @@ const registerProvider = async (req, res) => {
       return res.status(400).json({ message: 'Phone number already in use' });
     }
 
-    const hashedPassword = await bcrypt.hash(password, 12);
+    const hashedPassword = await bcrypt.hash(password, 10);
 
     const provider = await prisma.provider.create({
       data: {
