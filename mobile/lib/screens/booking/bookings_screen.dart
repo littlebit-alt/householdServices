@@ -35,15 +35,15 @@ class _BookingsScreenState extends State<BookingsScreen> {
       case 'CONFIRMED': return const Color(0xFF00D4FF);
       case 'ONGOING': return const Color(0xFFB44FFF);
       case 'COMPLETED': return const Color(0xFF00FFB3);
-      case 'CANCELLED': return Colors.white.withOpacity(0.3);
-      default: return Colors.white.withOpacity(0.3);
+      case 'CANCELLED': return Colors.grey.shade400;
+      default: return Colors.grey.shade400;
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF0A0A0A),
+      backgroundColor: Colors.white,
       body: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -53,29 +53,29 @@ class _BookingsScreenState extends State<BookingsScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text('My Bookings', style: TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold, letterSpacing: -0.5)),
+                  const Text('My Bookings', style: TextStyle(color: Color(0xFF1E293B), fontSize: 24, fontWeight: FontWeight.bold, letterSpacing: -0.5)),
                   const SizedBox(height: 4),
-                  Text('${bookings.length} bookings', style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 14)),
+                  Text('${bookings.length} bookings', style: TextStyle(color: Colors.grey.shade500, fontSize: 14)),
                 ],
               ),
             ),
             Expanded(
               child: loading
-                  ? const Center(child: CircularProgressIndicator(color: Color(0xFF00D4FF), strokeWidth: 2))
+                  ? const Center(child: CircularProgressIndicator(color: Color(0xFF0891B2), strokeWidth: 2))
                   : bookings.isEmpty
                       ? Center(
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Container(width: 80, height: 80,
-                                decoration: BoxDecoration(color: const Color(0xFF1A1A1A), borderRadius: BorderRadius.circular(24)),
-                                child: Icon(Icons.calendar_today_rounded, size: 32, color: Colors.white.withOpacity(0.2))),
+                                decoration: BoxDecoration(color: Colors.grey.shade100, borderRadius: BorderRadius.circular(24)),
+                                child: Icon(Icons.calendar_today_rounded, size: 32, color: Colors.grey.shade400)),
                               const SizedBox(height: 16),
-                              Text('No bookings yet', style: TextStyle(color: Colors.white.withOpacity(0.3), fontSize: 16)),
+                              Text('No bookings yet', style: TextStyle(color: Colors.grey.shade400, fontSize: 16)),
                               const SizedBox(height: 8),
                               GestureDetector(
-                                onTap: () => context.go('/providers'),
-                                child: const Text('Book a service', style: TextStyle(color: Color(0xFF00D4FF), fontSize: 14)),
+                                onTap: () => context.pop(),
+                                child: const Text('Book a service', style: TextStyle(color: Color(0xFF0891B2), fontSize: 14)),
                               ),
                             ],
                           ),
@@ -90,9 +90,9 @@ class _BookingsScreenState extends State<BookingsScreen> {
                               margin: const EdgeInsets.only(bottom: 12),
                               padding: const EdgeInsets.all(18),
                               decoration: BoxDecoration(
-                                color: const Color(0xFF141414),
+                                color: Colors.grey.shade50,
                                 borderRadius: BorderRadius.circular(20),
-                                border: Border.all(color: Colors.white.withOpacity(0.05)),
+                                border: Border.all(color: Colors.grey.shade200),
                               ),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -101,7 +101,7 @@ class _BookingsScreenState extends State<BookingsScreen> {
                                     children: [
                                       Expanded(
                                         child: Text(b['service']['name'],
-                                          style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600)),
+                                          style: const TextStyle(color: Color(0xFF1E293B), fontSize: 16, fontWeight: FontWeight.w600)),
                                       ),
                                       Container(
                                         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
@@ -117,30 +117,30 @@ class _BookingsScreenState extends State<BookingsScreen> {
                                   const SizedBox(height: 12),
                                   Row(
                                     children: [
-                                      Icon(Icons.person_outline_rounded, size: 14, color: Colors.white.withOpacity(0.3)),
+                                      Icon(Icons.person_outline_rounded, size: 14, color: Colors.grey.shade400),
                                       const SizedBox(width: 6),
-                                      Text(b['provider']['fullName'], style: TextStyle(color: Colors.white.withOpacity(0.5), fontSize: 13)),
+                                      Text(b['provider']['fullName'], style: TextStyle(color: Colors.grey.shade600, fontSize: 13)),
                                       const Spacer(),
-                                      Icon(Icons.calendar_today_outlined, size: 12, color: Colors.white.withOpacity(0.3)),
+                                      Icon(Icons.calendar_today_outlined, size: 12, color: Colors.grey.shade400),
                                       const SizedBox(width: 6),
                                       Text(b['scheduledAt'].toString().substring(0, 10),
-                                        style: TextStyle(color: Colors.white.withOpacity(0.5), fontSize: 12)),
+                                        style: TextStyle(color: Colors.grey.shade600, fontSize: 12)),
                                     ],
                                   ),
                                   const SizedBox(height: 12),
                                   Row(
                                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                     children: [
-                                      Text('\$${b['totalPrice']}', style: const TextStyle(color: Color(0xFF00D4FF), fontSize: 18, fontWeight: FontWeight.bold)),
+                                      Text('\$${b['totalPrice']}', style: const TextStyle(color: Color(0xFF0891B2), fontSize: 18, fontWeight: FontWeight.bold)),
                                       if (b['status'] == 'COMPLETED')
                                         Container(
                                           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                                           decoration: BoxDecoration(
-                                            color: const Color(0xFF1A1A1A),
+                                            color: Colors.grey.shade100,
                                             borderRadius: BorderRadius.circular(20),
-                                            border: Border.all(color: Colors.white.withOpacity(0.08)),
+                                            border: Border.all(color: Colors.grey.shade200),
                                           ),
-                                          child: Text('Rate Service', style: TextStyle(color: Colors.white.withOpacity(0.6), fontSize: 12)),
+                                          child: Text('Rate Service', style: TextStyle(color: Colors.grey.shade600, fontSize: 12)),
                                         ),
                                     ],
                                   ),
@@ -153,7 +153,6 @@ class _BookingsScreenState extends State<BookingsScreen> {
           ],
         ),
       ),
-      bottomNavigationBar: const BottomNav(currentIndex: 2),
     );
   }
 }

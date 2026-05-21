@@ -3,6 +3,8 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import '../../services/auth_service.dart';
 import '../../widgets/bottom_nav.dart';
+import 'add_address_screen.dart';
+import '../booking/bookings_screen.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -13,7 +15,7 @@ class ProfileScreen extends StatelessWidget {
     final user = auth.user;
 
     return Scaffold(
-      backgroundColor: const Color(0xFF0A0A0A),
+      backgroundColor: Colors.white,
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(20),
@@ -53,26 +55,26 @@ class ProfileScreen extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 14),
-              Text(user?['fullName'] ?? '', style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold)),
+              Text(user?['fullName'] ?? '', style: const TextStyle(color: Color(0xFF1E293B), fontSize: 20, fontWeight: FontWeight.bold)),
               const SizedBox(height: 4),
-              Text(user?['email'] ?? '', style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 13)),
+              Text(user?['email'] ?? '', style: TextStyle(color: Colors.grey.shade500, fontSize: 13)),
               const SizedBox(height: 28),
 
               // Stats row
               Container(
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF141414),
+                  color: Colors.grey.shade50,
                   borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: Colors.white.withOpacity(0.05)),
+                  border: Border.all(color: Colors.grey.shade200),
                 ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
                     _StatItem(label: 'Bookings', value: '0'),
-                    Container(width: 1, height: 30, color: Colors.white.withOpacity(0.08)),
+                    Container(width: 1, height: 30, color: Colors.grey.shade200),
                     _StatItem(label: 'Reviews', value: '0'),
-                    Container(width: 1, height: 30, color: Colors.white.withOpacity(0.08)),
+                    Container(width: 1, height: 30, color: Colors.grey.shade200),
                     _StatItem(label: 'Saved', value: '0'),
                   ],
                 ),
@@ -83,8 +85,8 @@ class ProfileScreen extends StatelessWidget {
               _MenuSection(
                 title: 'Account',
                 items: [
-                  _MenuItem(icon: Icons.calendar_today_rounded, label: 'My Bookings', onTap: () => context.go('/bookings')),
-                  _MenuItem(icon: Icons.location_on_rounded, label: 'My Addresses', onTap: () => context.go('/add-address')),
+                  _MenuItem(icon: Icons.calendar_today_rounded, label: 'My Bookings', onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const BookingsScreen()))),
+                  _MenuItem(icon: Icons.location_on_rounded, label: 'My Addresses', onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const AddAddressScreen()))),
                   _MenuItem(icon: Icons.notifications_rounded, label: 'Notifications', onTap: () {}),
                 ],
               ),
@@ -100,7 +102,7 @@ class ProfileScreen extends StatelessWidget {
 
               // Logout
               GestureDetector(
-                onTap: () async { await auth.logout(); if (context.mounted) context.go('/login'); },
+                onTap: () async { await auth.logout(); if (context.mounted) Navigator.pushReplacementNamed(context, '/role'); },
                 child: Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
@@ -122,7 +124,7 @@ class ProfileScreen extends StatelessWidget {
           ),
         ),
       ),
-      bottomNavigationBar: const BottomNav(currentIndex: 3),
+      
     );
   }
 }
@@ -134,9 +136,9 @@ class _StatItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Column(
     children: [
-      Text(value, style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold)),
+      Text(value, style: const TextStyle(color: Color(0xFF1E293B), fontSize: 20, fontWeight: FontWeight.bold)),
       const SizedBox(height: 2),
-      Text(label, style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 11)),
+      Text(label, style: TextStyle(color: Colors.grey.shade500, fontSize: 11)),
     ],
   );
 }
@@ -152,13 +154,13 @@ class _MenuSection extends StatelessWidget {
     children: [
       Padding(
         padding: const EdgeInsets.only(left: 4, bottom: 10),
-        child: Text(title, style: TextStyle(color: Colors.white.withOpacity(0.3), fontSize: 11, fontWeight: FontWeight.w600, letterSpacing: 1)),
+        child: Text(title, style: TextStyle(color: Colors.grey.shade400, fontSize: 11, fontWeight: FontWeight.w600, letterSpacing: 1)),
       ),
       Container(
         decoration: BoxDecoration(
-          color: const Color(0xFF141414),
+          color: Colors.grey.shade50,
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: Colors.white.withOpacity(0.05)),
+          border: Border.all(color: Colors.grey.shade200),
         ),
         child: Column(children: items),
       ),
@@ -181,12 +183,12 @@ class _MenuItem extends StatelessWidget {
         children: [
           Container(
             width: 34, height: 34,
-            decoration: BoxDecoration(color: const Color(0xFF1A1A1A), borderRadius: BorderRadius.circular(10)),
-            child: Icon(icon, size: 16, color: const Color(0xFF00D4FF)),
+            decoration: BoxDecoration(color: Colors.grey.shade100, borderRadius: BorderRadius.circular(10)),
+            child: Icon(icon, size: 16, color: const Color(0xFF0891B2)),
           ),
           const SizedBox(width: 12),
-          Expanded(child: Text(label, style: const TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w500))),
-          Icon(Icons.arrow_forward_ios_rounded, size: 12, color: Colors.white.withOpacity(0.2)),
+          Expanded(child: Text(label, style: const TextStyle(color: Color(0xFF1E293B), fontSize: 14, fontWeight: FontWeight.w500))),
+          Icon(Icons.arrow_forward_ios_rounded, size: 12, color: Colors.grey.shade300),
         ],
       ),
     ),

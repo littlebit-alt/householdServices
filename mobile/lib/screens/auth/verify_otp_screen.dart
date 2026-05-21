@@ -16,12 +16,11 @@ class _VerifyOtpScreenState extends State<VerifyOtpScreen> {
 
   Future<void> _verify() async {
     final auth = context.read<AuthService>();
-    final userId = int.parse(
-        GoRouterState.of(context).uri.queryParameters['userId'] ?? '0');
+    final userId = ModalRoute.of(context)?.settings.arguments as int? ?? 0;
     final result = await auth.verifyOtp(userId, _otpController.text.trim());
     if (!mounted) return;
     if (result['success']) {
-      context.go('/home');
+      Navigator.pushReplacementNamed(context, '/home');
     } else {
      showError(context, result['message'] ?? 'Login failed');
     }

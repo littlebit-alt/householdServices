@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import '../../services/auth_service.dart';
 import '../../utils/snackbar.dart';
+import 'forgot_password_screen.dart';
 
 class ProviderLoginScreen extends StatefulWidget {
   const ProviderLoginScreen({super.key});
@@ -24,7 +25,7 @@ class _ProviderLoginScreenState extends State<ProviderLoginScreen> {
     );
     if (!mounted) return;
     if (result['success']) {
-      context.go('/provider/home');
+      Navigator.pushReplacementNamed(context, '/provider/home');
     } else {
       showError(context, result['message'] ?? 'Login failed');
     }
@@ -34,57 +35,53 @@ class _ProviderLoginScreenState extends State<ProviderLoginScreen> {
   Widget build(BuildContext context) {
     final auth = context.watch<AuthService>();
     return Scaffold(
-      backgroundColor: const Color(0xFF0A0A0A),
+      backgroundColor: Colors.white,
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(28),
+          padding: const EdgeInsets.all(24),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const SizedBox(height: 20),
-              GestureDetector(
-                onTap: () => context.go('/role'),
+              const SizedBox(height: 32),
+              Center(
                 child: Container(
-                  width: 40, height: 40,
-                  decoration: BoxDecoration(color: const Color(0xFF1A1A1A), borderRadius: BorderRadius.circular(12), border: Border.all(color: Colors.white.withOpacity(0.06))),
-                  child: Icon(Icons.arrow_back_ios_new_rounded, size: 16, color: Colors.white.withOpacity(0.7)),
+                  width: 64,
+                  height: 64,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(20),
+                    boxShadow: [BoxShadow(color: const Color(0xFF0891B2).withOpacity(0.2), blurRadius: 20)],
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(20),
+                    child: Image.asset('lib/asset/logo.png', fit: BoxFit.cover),
+                  ),
                 ),
               ),
+              const SizedBox(height: 28),
+              const Text('Provider Login', style: TextStyle(color: Color(0xFF1E293B), fontSize: 28, fontWeight: FontWeight.bold, letterSpacing: -0.5)),
+              const SizedBox(height: 6),
+              Text('Your account is created by admin', style: TextStyle(color: Colors.grey.shade500, fontSize: 15)),
               const SizedBox(height: 32),
-              Container(
-  width: 56,
-  height: 56,
-  decoration: BoxDecoration(
-    borderRadius: BorderRadius.circular(16),
-    boxShadow: [BoxShadow(color: const Color(0xFF00FFB3).withOpacity(0.2), blurRadius: 20)],
-  ),
-  child: ClipRRect(
-    borderRadius: BorderRadius.circular(16),
-    child: Image.asset('lib/asset/logo.png', fit: BoxFit.cover),
-  ),
-),
-              const SizedBox(height: 24),
-              const Text('Provider Login', style: TextStyle(color: Colors.white, fontSize: 32, fontWeight: FontWeight.bold, letterSpacing: -0.5)),
-              const SizedBox(height: 8),
-              Text('Your account is created by admin', style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 15)),
-              const SizedBox(height: 40),
-
-              _buildLabel('Email'),
+              _buildLabel('Email address'),
               const SizedBox(height: 8),
               _buildInput(_emailController, Icons.email_outlined, false),
-              const SizedBox(height: 20),
+              const SizedBox(height: 18),
               _buildLabel('Password'),
               const SizedBox(height: 8),
               Container(
-                decoration: BoxDecoration(color: const Color(0xFF1A1A1A), borderRadius: BorderRadius.circular(14), border: Border.all(color: Colors.white.withOpacity(0.06))),
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade50,
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(color: Colors.grey.shade200),
+                ),
                 child: TextField(
                   controller: _passwordController,
                   obscureText: _obscure,
-                  style: const TextStyle(color: Colors.white, fontSize: 15),
+                  style: const TextStyle(color: Color(0xFF1E293B), fontSize: 15),
                   decoration: InputDecoration(
-                    prefixIcon: Icon(Icons.lock_outline, color: Colors.white.withOpacity(0.3), size: 20),
+                    prefixIcon: Icon(Icons.lock_outline, color: Colors.grey.shade400, size: 20),
                     suffixIcon: IconButton(
-                      icon: Icon(_obscure ? Icons.visibility_outlined : Icons.visibility_off_outlined, color: Colors.white.withOpacity(0.3), size: 20),
+                      icon: Icon(_obscure ? Icons.visibility_outlined : Icons.visibility_off_outlined, color: Colors.grey.shade400, size: 20),
                       onPressed: () => setState(() => _obscure = !_obscure),
                     ),
                     border: InputBorder.none,
@@ -92,21 +89,35 @@ class _ProviderLoginScreenState extends State<ProviderLoginScreen> {
                   ),
                 ),
               ),
-              const SizedBox(height: 32),
-
+              const SizedBox(height: 8),
+              Align(
+                alignment: Alignment.centerRight,
+                child: TextButton(
+                  onPressed: () =>   Navigator.push(context, MaterialPageRoute(builder: (_) => const ForgotPasswordScreen())),
+                  child: const Text('Forgot password?', style: TextStyle(color: Color(0xFF0891B2), fontSize: 13)),
+                ),
+              ),
+              const SizedBox(height: 8),
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
                   onPressed: auth.isLoading ? null : _login,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF00FFB3),
-                    foregroundColor: Colors.black,
+                    backgroundColor: const Color(0xFF0891B2),
+                    foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(vertical: 16),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                     elevation: 0,
                   ),
                   child: auth.isLoading
-                      ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.black, strokeWidth: 2))
+                      ? const Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            SizedBox(width: 18, height: 18, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2)),
+                            SizedBox(width: 10),
+                            Text('Please wait...', style: TextStyle(fontSize: 14)),
+                          ],
+                        )
                       : const Text('Sign In as Provider', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                 ),
               ),
@@ -117,19 +128,25 @@ class _ProviderLoginScreenState extends State<ProviderLoginScreen> {
     );
   }
 
-  Widget _buildLabel(String text) => Text(text, style: TextStyle(color: Colors.white.withOpacity(0.6), fontSize: 13, fontWeight: FontWeight.w500));
+  Widget _buildLabel(String text) => Text(text, style: TextStyle(color: Colors.grey.shade600, fontSize: 13, fontWeight: FontWeight.w500));
 
-  Widget _buildInput(TextEditingController controller, IconData icon, bool obscure) => Container(
-    decoration: BoxDecoration(color: const Color(0xFF1A1A1A), borderRadius: BorderRadius.circular(14), border: Border.all(color: Colors.white.withOpacity(0.06))),
-    child: TextField(
-      controller: controller,
-      obscureText: obscure,
-      style: const TextStyle(color: Colors.white, fontSize: 15),
-      decoration: InputDecoration(
-        prefixIcon: Icon(icon, color: Colors.white.withOpacity(0.3), size: 20),
-        border: InputBorder.none,
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+  Widget _buildInput(TextEditingController controller, IconData icon, bool obscure) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.grey.shade50,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: Colors.grey.shade200),
       ),
-    ),
-  );
+      child: TextField(
+        controller: controller,
+        obscureText: obscure,
+        style: const TextStyle(color: Color(0xFF1E293B), fontSize: 15),
+        decoration: InputDecoration(
+          prefixIcon: Icon(icon, color: Colors.grey.shade400, size: 20),
+          border: InputBorder.none,
+          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        ),
+      ),
+    );
+  }
 }

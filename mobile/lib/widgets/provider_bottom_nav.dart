@@ -9,19 +9,62 @@ class ProviderBottomNav extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: const Color(0xFF111111),
-        border: Border(top: BorderSide(color: Colors.white.withOpacity(0.08), width: 0.5)),
+        color: Colors.white,
+        border: Border(top: BorderSide(color: Colors.grey.shade200, width: 1)),
+        boxShadow: [
+          BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10, offset: const Offset(0, -2)),
+        ],
       ),
       child: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              _NavItem(icon: Icons.dashboard_rounded, label: 'Dashboard', index: 0, current: currentIndex, onTap: () => context.go('/provider/home')),
-              _NavItem(icon: Icons.calendar_month_rounded, label: 'Bookings', index: 1, current: currentIndex, onTap: () => context.go('/provider/bookings')),
-              _NavItem(icon: Icons.notifications_rounded, label: 'Alerts', index: 2, current: currentIndex, onTap: () => context.go('/provider/notifications')),
-              _NavItem(icon: Icons.person_rounded, label: 'Profile', index: 3, current: currentIndex, onTap: () => context.go('/provider/profile')),
+              _NavItem(
+                icon: Icons.dashboard_rounded, 
+                label: 'Dashboard', 
+                index: 0, 
+                current: currentIndex, 
+                onTap: () {
+                  if (currentIndex != 0) {
+                    context.pushReplacement('/provider/home');
+                  }
+                }
+              ),
+              _NavItem(
+                icon: Icons.calendar_month_rounded, 
+                label: 'Bookings', 
+                index: 1, 
+                current: currentIndex, 
+                onTap: () {
+                  if (currentIndex != 1) {
+                    context.pushReplacement('/provider/bookings');
+                  }
+                }
+              ),
+              _NavItem(
+                icon: Icons.notifications_rounded, 
+                label: 'Alerts', 
+                index: 2, 
+                current: currentIndex, 
+                onTap: () {
+                  if (currentIndex != 2) {
+                    context.pushReplacement('/provider/notifications');
+                  }
+                }
+              ),
+              _NavItem(
+                icon: Icons.person_rounded, 
+                label: 'Profile', 
+                index: 3, 
+                current: currentIndex, 
+                onTap: () {
+                  if (currentIndex != 3) {
+                    context.pushReplacement('/provider/profile');
+                  }
+                }
+              ),
             ],
           ),
         ),
@@ -45,17 +88,21 @@ class _NavItem extends StatelessWidget {
       onTap: onTap,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
         decoration: BoxDecoration(
-          color: isActive ? const Color(0xFF00FFB3).withOpacity(0.1) : Colors.transparent,
+          color: isActive ? const Color(0xFF0891B2).withOpacity(0.1) : Colors.transparent,
           borderRadius: BorderRadius.circular(12),
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(icon, size: 22, color: isActive ? const Color(0xFF00FFB3) : Colors.white.withOpacity(0.4)),
+            Icon(icon, size: 22, color: isActive ? const Color(0xFF0891B2) : Colors.grey.shade400),
             const SizedBox(height: 3),
-            Text(label, style: TextStyle(fontSize: 10, color: isActive ? const Color(0xFF00FFB3) : Colors.white.withOpacity(0.4), fontWeight: isActive ? FontWeight.w600 : FontWeight.w400)),
+            Text(label, style: TextStyle(
+              fontSize: 10,
+              color: isActive ? const Color(0xFF0891B2) : Colors.grey.shade400,
+              fontWeight: isActive ? FontWeight.w600 : FontWeight.w400,
+            )),
           ],
         ),
       ),

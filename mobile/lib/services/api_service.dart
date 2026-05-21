@@ -7,10 +7,10 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class ApiService {
   // Render free tier can take 50-60s to cold start — give it 90s to be safe
-  static const Duration _timeout = Duration(seconds: 90);
+  static const Duration _timeout = Duration(seconds: 30);
 
   static final Dio _dio = Dio(BaseOptions(
-    baseUrl: 'http://localhost:5000/api',
+    baseUrl: 'https://householdservices.onrender.com/api',
     connectTimeout: _timeout,
     receiveTimeout: _timeout,
     sendTimeout: _timeout,

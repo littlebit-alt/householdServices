@@ -54,14 +54,14 @@ class _ProviderBookingsScreenState extends State<ProviderBookingsScreen> with Si
       case 'CONFIRMED': return const Color(0xFF00D4FF);
       case 'ONGOING': return const Color(0xFFB44FFF);
       case 'COMPLETED': return const Color(0xFF00FFB3);
-      default: return Colors.white.withOpacity(0.3);
+      default: return Colors.grey.shade400;
     }
   }
 
   void _showStatusSheet(Map booking) {
     showModalBottomSheet(
       context: context,
-      backgroundColor: const Color(0xFF141414),
+      backgroundColor: Colors.grey.shade50,
       shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
       builder: (_) => Padding(
         padding: const EdgeInsets.all(24),
@@ -69,7 +69,7 @@ class _ProviderBookingsScreenState extends State<ProviderBookingsScreen> with Si
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('Update Status', style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
+            const Text('Update Status', style: TextStyle(color: Color(0xFF1E293B), fontSize: 18, fontWeight: FontWeight.bold)),
             const SizedBox(height: 20),
             ...['CONFIRMED', 'ONGOING', 'COMPLETED', 'CANCELLED'].map((status) {
               final color = _statusColor(status);
@@ -103,7 +103,7 @@ class _ProviderBookingsScreenState extends State<ProviderBookingsScreen> with Si
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF0A0A0A),
+      backgroundColor: Colors.white,
       body: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -113,8 +113,8 @@ class _ProviderBookingsScreenState extends State<ProviderBookingsScreen> with Si
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text('Bookings', style: TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold, letterSpacing: -0.5)),
-                  Text('${allBookings.length} total', style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 14)),
+                  const Text('Bookings', style: TextStyle(color: Color(0xFF1E293B), fontSize: 24, fontWeight: FontWeight.bold, letterSpacing: -0.5)),
+                  Text('${allBookings.length} total', style: TextStyle(color: Colors.grey.shade500, fontSize: 14)),
                 ],
               ),
             ),
@@ -124,9 +124,9 @@ class _ProviderBookingsScreenState extends State<ProviderBookingsScreen> with Si
               isScrollable: true,
               tabAlignment: TabAlignment.start,
               padding: const EdgeInsets.symmetric(horizontal: 20),
-              labelColor: const Color(0xFF00FFB3),
-              unselectedLabelColor: Colors.white.withOpacity(0.3),
-              indicatorColor: const Color(0xFF00FFB3),
+              labelColor: const Color(0xFF0891B2),
+              unselectedLabelColor: Colors.grey.shade400,
+              indicatorColor: const Color(0xFF0891B2),
               indicatorSize: TabBarIndicatorSize.label,
               dividerColor: Colors.transparent,
               labelStyle: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
@@ -135,15 +135,15 @@ class _ProviderBookingsScreenState extends State<ProviderBookingsScreen> with Si
             const SizedBox(height: 8),
             Expanded(
               child: loading
-                  ? const Center(child: CircularProgressIndicator(color: Color(0xFF00FFB3), strokeWidth: 2))
+                  ? const Center(child: CircularProgressIndicator(color: Color(0xFF0891B2), strokeWidth: 2))
                   : TabBarView(
                       controller: _tabController,
                       children: tabs.map((tab) {
                         final list = _filtered(tab);
-                        if (list.isEmpty) return Center(child: Text('No $tab bookings', style: TextStyle(color: Colors.white.withOpacity(0.3))));
+                        if (list.isEmpty) return Center(child: Text('No $tab bookings', style: TextStyle(color: Colors.grey.shade400)));
                         return RefreshIndicator(
                           onRefresh: _fetchBookings,
-                          color: const Color(0xFF00FFB3),
+                          color: const Color(0xFF0891B2),
                           child: ListView.builder(
                             padding: const EdgeInsets.symmetric(horizontal: 20),
                             itemCount: list.length,
@@ -154,9 +154,9 @@ class _ProviderBookingsScreenState extends State<ProviderBookingsScreen> with Si
                                 margin: const EdgeInsets.only(bottom: 12),
                                 padding: const EdgeInsets.all(18),
                                 decoration: BoxDecoration(
-                                  color: const Color(0xFF141414),
+                                  color: Colors.grey.shade50,
                                   borderRadius: BorderRadius.circular(20),
-                                  border: Border.all(color: Colors.white.withOpacity(0.05)),
+                                  border: Border.all(color: Colors.grey.shade200),
                                 ),
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -179,9 +179,9 @@ class _ProviderBookingsScreenState extends State<ProviderBookingsScreen> with Si
                                           child: Column(
                                             crossAxisAlignment: CrossAxisAlignment.start,
                                             children: [
-                                              Text(b['user']['fullName'], style: const TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.w600)),
+                                              Text(b['user']['fullName'], style: const TextStyle(color: Color(0xFF1E293B), fontSize: 15, fontWeight: FontWeight.w600)),
                                               const SizedBox(height: 2),
-                                              Text(b['service']['name'], style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 12)),
+                                              Text(b['service']['name'], style: TextStyle(color: Colors.grey.shade500, fontSize: 12)),
                                             ],
                                           ),
                                         ),
@@ -199,12 +199,12 @@ class _ProviderBookingsScreenState extends State<ProviderBookingsScreen> with Si
                                     const SizedBox(height: 14),
                                     Row(
                                       children: [
-                                        Icon(Icons.location_on_rounded, size: 13, color: Colors.white.withOpacity(0.3)),
+                                        Icon(Icons.location_on_rounded, size: 13, color: Colors.grey.shade400),
                                         const SizedBox(width: 4),
                                         Expanded(
                                           child: Text(
                                             '${b['address']?['address'] ?? ''}, ${b['address']?['city'] ?? ''}',
-                                            style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 12),
+                                            style: TextStyle(color: Colors.grey.shade500, fontSize: 12),
                                             maxLines: 1,
                                             overflow: TextOverflow.ellipsis,
                                           ),
@@ -214,12 +214,12 @@ class _ProviderBookingsScreenState extends State<ProviderBookingsScreen> with Si
                                     const SizedBox(height: 4),
                                     Row(
                                       children: [
-                                        Icon(Icons.access_time_rounded, size: 13, color: Colors.white.withOpacity(0.3)),
+                                        Icon(Icons.access_time_rounded, size: 13, color: Colors.grey.shade400),
                                         const SizedBox(width: 4),
                                         Text(b['scheduledAt'].toString().substring(0, 16).replaceAll('T', ' '),
-                                          style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 12)),
+                                          style: TextStyle(color: Colors.grey.shade500, fontSize: 12)),
                                         const Spacer(),
-                                        Text('\$${b['totalPrice']}', style: const TextStyle(color: Color(0xFF00FFB3), fontSize: 16, fontWeight: FontWeight.bold)),
+                                        Text('\$${b['totalPrice']}', style: const TextStyle(color: Color(0xFF0891B2), fontSize: 16, fontWeight: FontWeight.bold)),
                                       ],
                                     ),
                                     if (b['notes'] != null && b['notes'].toString().isNotEmpty) ...[
@@ -227,14 +227,14 @@ class _ProviderBookingsScreenState extends State<ProviderBookingsScreen> with Si
                                       Container(
                                         padding: const EdgeInsets.all(10),
                                         decoration: BoxDecoration(
-                                          color: Colors.white.withOpacity(0.03),
+                                          color: Colors.grey.shade100,
                                           borderRadius: BorderRadius.circular(10),
                                         ),
                                         child: Row(
                                           children: [
-                                            Icon(Icons.notes_rounded, size: 13, color: Colors.white.withOpacity(0.3)),
+                                            Icon(Icons.notes_rounded, size: 13, color: Colors.grey.shade400),
                                             const SizedBox(width: 6),
-                                            Expanded(child: Text(b['notes'], style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 12))),
+                                            Expanded(child: Text(b['notes'], style: TextStyle(color: Colors.grey.shade600, fontSize: 12))),
                                           ],
                                         ),
                                       ),
@@ -243,20 +243,20 @@ class _ProviderBookingsScreenState extends State<ProviderBookingsScreen> with Si
                                       const SizedBox(height: 14),
                                       Row(
                                         children: [
-                                          Icon(Icons.phone_rounded, size: 14, color: const Color(0xFF00FFB3)),
+                                          Icon(Icons.phone_rounded, size: 14, color: const Color(0xFF0891B2)),
                                           const SizedBox(width: 6),
-                                          Text(b['user']['phone'] ?? '', style: const TextStyle(color: Color(0xFF00FFB3), fontSize: 13)),
+                                          Text(b['user']['phone'] ?? '', style: const TextStyle(color: Color(0xFF0891B2), fontSize: 13)),
                                           const Spacer(),
                                           GestureDetector(
                                             onTap: () => _showStatusSheet(b),
                                             child: Container(
                                               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
                                               decoration: BoxDecoration(
-                                                color: const Color(0xFF00FFB3).withOpacity(0.1),
+                                                color: const Color(0xFF0891B2).withOpacity(0.1),
                                                 borderRadius: BorderRadius.circular(20),
-                                                border: Border.all(color: const Color(0xFF00FFB3).withOpacity(0.2)),
+                                                border: Border.all(color: const Color(0xFF0891B2).withOpacity(0.2)),
                                               ),
-                                              child: const Text('Update Status', style: TextStyle(color: Color(0xFF00FFB3), fontSize: 12, fontWeight: FontWeight.w600)),
+                                              child: const Text('Update Status', style: TextStyle(color: Color(0xFF0891B2), fontSize: 12, fontWeight: FontWeight.w600)),
                                             ),
                                           ),
                                         ],
@@ -274,7 +274,7 @@ class _ProviderBookingsScreenState extends State<ProviderBookingsScreen> with Si
           ],
         ),
       ),
-      bottomNavigationBar: const ProviderBottomNav(currentIndex: 1),
+      
     );
   }
 }

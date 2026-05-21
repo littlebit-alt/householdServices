@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import '../services/auth_service.dart';
+import '../services/notification_service.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -25,29 +26,21 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
     _navigate();
   }
 
- Future<void> _navigate() async {
-  await Future.delayed(const Duration(seconds: 2));
-  if (!mounted) return;
-  
-  final auth = context.read<AuthService>();
-  
-  // Wait until storage is loaded
-  while (!auth.loaded) {
-    await Future.delayed(const Duration(milliseconds: 100));
-  }
-  
-  if (!mounted) return;
-  
-  if (auth.isLoggedIn) {
-    if (auth.isProvider) {
-      context.go('/provider/home');
-    } else {
-      context.go('/home');
+  Future<void> _navigate() async {
+    await Future.delayed(const Duration(seconds: 2));
+    if (!mounted) return;
+    final auth = context.read<AuthService>();
+    while (!auth.loaded) {
+      await Future.delayed(const Duration(milliseconds: 100));
     }
-  } else {
-    context.go('/onboarding');
+    if (!mounted) return;
+    NotificationService.setContext(context);
+    if (auth.isLoggedIn) {
+      Navigator.pushReplacementNamed(context, auth.isProvider ? '/provider/home' : '/home');
+    } else {
+      Navigator.pushReplacementNamed(context, '/onboarding');
+    }
   }
-}
 
   @override
   void dispose() { _controller.dispose(); super.dispose(); }
@@ -55,7 +48,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF0A0A0A),
+      backgroundColor: Colors.white,
       body: Center(
         child: FadeTransition(
           opacity: _fade,
@@ -64,48 +57,21 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                // 👇 UPDATED Logo Container with shadow
                 Container(
-                  width: 80,
-                  height: 80,
+                  width: 90, height: 90,
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(24),
-                    boxShadow: [
-                      BoxShadow(
-                        color: const Color(0xFF00D4FF).withOpacity(0.3),
-                        blurRadius: 30,
-                        spreadRadius: 5,
-                      ),
-                    ],
+                    borderRadius: BorderRadius.circular(26),
+                    boxShadow: [BoxShadow(color: const Color(0xFF0891B2).withOpacity(0.25), blurRadius: 30, spreadRadius: 5)],
                   ),
                   child: ClipRRect(
-                    borderRadius: BorderRadius.circular(24),
-                    child: Image.asset(
-                      'lib/asset/logo.png',
-                      width: 80,
-                      height: 80,
-                      fit: BoxFit.cover,
-                    ),
+                    borderRadius: BorderRadius.circular(26),
+                    child: Image.asset('lib/asset/logo.png', fit: BoxFit.cover),
                   ),
                 ),
                 const SizedBox(height: 20),
-                const Text(
-                  'HouseServ',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 28,
-                    fontWeight: FontWeight.bold,
-                    letterSpacing: -0.5,
-                  ),
-                ),
+                const Text('ServeMe', style: TextStyle(color: Color(0xFF1E293B), fontSize: 30, fontWeight: FontWeight.bold, letterSpacing: -0.5)),
                 const SizedBox(height: 6),
-                Text(
-                  'Services at your fingertips',
-                  style: TextStyle(
-                    color: Colors.white.withOpacity(0.4),
-                    fontSize: 14,
-                  ),
-                ),
+                Text('Services at your fingertips', style: TextStyle(color: Colors.grey.shade400, fontSize: 14)),
               ],
             ),
           ),

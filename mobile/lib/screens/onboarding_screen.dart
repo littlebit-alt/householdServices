@@ -36,7 +36,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF0A0A0A),
+      backgroundColor: const Color.fromARGB(255, 255, 255, 255),
       body: SafeArea(
         child: Column(
           children: [
@@ -69,13 +69,13 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                         const SizedBox(height: 40),
                         Text(
                           page['title'] as String,
-                          style: const TextStyle(color: Colors.white, fontSize: 36, fontWeight: FontWeight.bold, height: 1.1, letterSpacing: -1),
+                          style: const TextStyle(color: Color.fromARGB(255, 0, 0, 0), fontSize: 36, fontWeight: FontWeight.bold, height: 1.1, letterSpacing: -1),
                           textAlign: TextAlign.center,
-                        ),
+                        ),  
                         const SizedBox(height: 16),
                         Text(
                           page['subtitle'] as String,
-                          style: TextStyle(color: Colors.white.withOpacity(0.5), fontSize: 16, height: 1.6),
+                          style: TextStyle(color: const Color.fromARGB(255, 56, 56, 56).withOpacity(0.5), fontSize: 16, height: 1.6),
                           textAlign: TextAlign.center,
                         ),
                       ],
@@ -107,7 +107,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
-                        onPressed: () => context.go('/role'),
+                        onPressed: () => Navigator.pushReplacementNamed(context, '/role'),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: const Color(0xFF00D4FF),
                           foregroundColor: Colors.black,
@@ -120,7 +120,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     ),
                     const SizedBox(height: 12),
                     TextButton(
-                      onPressed: () => context.go('/role'),
+                      onPressed: () => Navigator.pushReplacementNamed(context, '/role'),
                       child: Text('Already have an account', style: TextStyle(color: Colors.white.withOpacity(0.5), fontSize: 14)),
                     ),
                   ] else

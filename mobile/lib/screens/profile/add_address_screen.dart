@@ -38,8 +38,8 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Address added successfully!')),
       );
-      context.go('/profile');
-    } catch (e) {
+      Navigator.pop(context);
+    } catch (e) { 
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(e.toString())),
@@ -63,7 +63,7 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
               child: Row(
                 children: [
                   GestureDetector(
-                    onTap: () => context.go('/profile'),
+                    onTap: () => context.pop(),
                     child: const Icon(Icons.arrow_back_ios_new_rounded,
                         size: 20, color: Color(0xFF1E293B)),
                   ),

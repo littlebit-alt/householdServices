@@ -89,7 +89,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       if (result['emailSent'] == false) {
         showError(context, 'Account created but email delivery failed. Please use resend OTP.');
       }
-      context.go('/verify-otp?userId=${result['userId']}');
+      Navigator.pushNamed(context, '/verify-otp', arguments: result['userId']);
     } else {
       showError(context, result['message'] ?? 'Registration failed');
     }
@@ -99,7 +99,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   Widget build(BuildContext context) {
     final auth = context.watch<AuthService>();
     return Scaffold(
-      backgroundColor: const Color(0xFF0A0A0A),
+      backgroundColor: Colors.white, // Changed from black to white
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(28),
@@ -108,16 +108,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
             children: [
               const SizedBox(height: 40),
               GestureDetector(
-                onTap: () => context.go('/login'),
+                onTap: () => Navigator.pop(context),
                 child: Container(
                   width: 40,
                   height: 40,
                   decoration: BoxDecoration(
-                    color: const Color(0xFF1A1A1A),
+                    color: Colors.grey.shade50, // Changed from #1A1A1A
                     borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: Colors.white.withOpacity(0.06)),
+                    border: Border.all(color: Colors.grey.shade200), // Changed from white with opacity
                   ),
-                  child: Icon(Icons.arrow_back_ios_new_rounded, size: 16, color: Colors.white.withOpacity(0.7)),
+                  child: Icon(Icons.arrow_back_ios_new_rounded, size: 16, color: Colors.grey.shade600), // Changed to grey
                 ),
               ),
               const SizedBox(height: 28),
@@ -126,7 +126,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 height: 56,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(16),
-                  boxShadow: [BoxShadow(color: const Color(0xFF00D4FF).withOpacity(0.2), blurRadius: 20)],
+                  boxShadow: [BoxShadow(color: const Color(0xFF0891B2).withOpacity(0.2), blurRadius: 20)], // Changed to match login
                 ),
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(16),
@@ -134,9 +134,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ),
               ),
               const SizedBox(height: 24),
-              const Text('Create account', style: TextStyle(color: Colors.white, fontSize: 32, fontWeight: FontWeight.bold, letterSpacing: -0.5)),
+              const Text('Create account', style: TextStyle(color: Color(0xFF1E293B), fontSize: 32, fontWeight: FontWeight.bold, letterSpacing: -0.5)), // Changed to dark color
               const SizedBox(height: 8),
-              Text('Join thousands of happy customers', style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 16)),
+              Text('Join thousands of happy customers', style: TextStyle(color: Colors.grey.shade500, fontSize: 16)), // Changed to grey
               const SizedBox(height: 40),
 
               _buildField('Full Name', _nameController, Icons.person_outline, false),
@@ -148,22 +148,22 @@ class _RegisterScreenState extends State<RegisterScreen> {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Password', style: TextStyle(color: Colors.white.withOpacity(0.6), fontSize: 13, fontWeight: FontWeight.w500)),
+                  Text('Password', style: TextStyle(color: Colors.grey.shade600, fontSize: 13, fontWeight: FontWeight.w500)), // Changed to grey
                   const SizedBox(height: 8),
                   Container(
                     decoration: BoxDecoration(
-                      color: const Color(0xFF1A1A1A),
+                      color: Colors.grey.shade50, // Changed from #1A1A1A
                       borderRadius: BorderRadius.circular(14),
-                      border: Border.all(color: Colors.white.withOpacity(0.06)),
+                      border: Border.all(color: Colors.grey.shade200), // Changed from white with opacity
                     ),
                     child: TextField(
                       controller: _passwordController,
                       obscureText: _obscure,
-                      style: const TextStyle(color: Colors.white, fontSize: 15),
+                      style: const TextStyle(color: Color(0xFF1E293B), fontSize: 15), // Changed to dark color
                       decoration: InputDecoration(
-                        prefixIcon: Icon(Icons.lock_outline, color: Colors.white.withOpacity(0.3), size: 20),
+                        prefixIcon: Icon(Icons.lock_outline, color: Colors.grey.shade400, size: 20), // Changed to grey
                         suffixIcon: IconButton(
-                          icon: Icon(_obscure ? Icons.visibility_outlined : Icons.visibility_off_outlined, color: Colors.white.withOpacity(0.3), size: 20),
+                          icon: Icon(_obscure ? Icons.visibility_outlined : Icons.visibility_off_outlined, color: Colors.grey.shade400, size: 20),
                           onPressed: () => setState(() => _obscure = !_obscure),
                         ),
                         border: InputBorder.none,
@@ -180,14 +180,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 child: ElevatedButton(
                   onPressed: auth.isLoading ? null : _register,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF00D4FF),
-                    foregroundColor: Colors.black,
+                    backgroundColor: const Color(0xFF0891B2), // Changed to match login
+                    foregroundColor: Colors.white, // Changed to white
                     padding: const EdgeInsets.symmetric(vertical: 16),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                     elevation: 0,
                   ),
                   child: auth.isLoading
-                      ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.black, strokeWidth: 2))
+                      ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2)) // Changed to white
                       : const Text('Create Account', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                 ),
               ),
@@ -199,22 +199,22 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   width: double.infinity,
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                   decoration: BoxDecoration(
-                    color: const Color(0xFF1A1A1A),
+                    color: Colors.grey.shade50, // Changed from #1A1A1A
                     borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: const Color(0xFF00D4FF).withOpacity(0.2)),
+                    border: Border.all(color: const Color(0xFF0891B2).withOpacity(0.2)), // Changed to match login
                   ),
                   child: Row(
                     children: [
                       const SizedBox(
                         width: 14,
                         height: 14,
-                        child: CircularProgressIndicator(color: Color(0xFF00D4FF), strokeWidth: 2),
+                        child: CircularProgressIndicator(color: Color(0xFF0891B2), strokeWidth: 2), // Changed to match login
                       ),
                       const SizedBox(width: 12),
                       Expanded(
                         child: Text(
                           'Server is warming up, please wait a moment…',
-                          style: TextStyle(color: Colors.white.withOpacity(0.5), fontSize: 13),
+                          style: TextStyle(color: Colors.grey.shade600, fontSize: 13), // Changed to grey
                         ),
                       ),
                     ],
@@ -226,10 +226,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text('Already have an account? ', style: TextStyle(color: Colors.white.withOpacity(0.4))),
+                  Text('Already have an account? ', style: TextStyle(color: Colors.grey.shade500)), // Changed to grey
                   GestureDetector(
-                    onTap: () => context.go('/login'),
-                    child: const Text('Sign In', style: TextStyle(color: Color(0xFF00D4FF), fontWeight: FontWeight.w600)),
+                    onTap: () => Navigator.pushReplacementNamed(context, '/login'),
+                    child: const Text('Sign In', style: TextStyle(color: Color(0xFF0891B2), fontWeight: FontWeight.w600)), // Changed to match login
                   ),
                 ],
               ),
@@ -244,20 +244,20 @@ class _RegisterScreenState extends State<RegisterScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: TextStyle(color: Colors.white.withOpacity(0.6), fontSize: 13, fontWeight: FontWeight.w500)),
+        Text(label, style: TextStyle(color: Colors.grey.shade600, fontSize: 13, fontWeight: FontWeight.w500)), // Changed to grey
         const SizedBox(height: 8),
         Container(
           decoration: BoxDecoration(
-            color: const Color(0xFF1A1A1A),
+            color: Colors.grey.shade50, // Changed from #1A1A1A
             borderRadius: BorderRadius.circular(14),
-            border: Border.all(color: Colors.white.withOpacity(0.06)),
+            border: Border.all(color: Colors.grey.shade200), // Changed from white with opacity
           ),
           child: TextField(
             controller: controller,
             obscureText: obscure,
-            style: const TextStyle(color: Colors.white, fontSize: 15),
+            style: const TextStyle(color: Color(0xFF1E293B), fontSize: 15), // Changed to dark color
             decoration: InputDecoration(
-              prefixIcon: Icon(icon, color: Colors.white.withOpacity(0.3), size: 20),
+              prefixIcon: Icon(icon, color: Colors.grey.shade400, size: 20), // Changed to grey
               border: InputBorder.none,
               contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
             ),

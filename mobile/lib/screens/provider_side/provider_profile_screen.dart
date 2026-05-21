@@ -4,6 +4,8 @@ import 'package:provider/provider.dart';
 import '../../services/auth_service.dart';
 import '../../services/api_service.dart';
 import '../../widgets/provider_bottom_nav.dart';
+import 'provider_bookings_screen.dart';
+import 'provider_notifications_screen.dart';
 
 class ProviderProfileScreen extends StatefulWidget {
   const ProviderProfileScreen({super.key});
@@ -34,10 +36,10 @@ class _ProviderProfileScreenState extends State<ProviderProfileScreen> {
     final provider = auth.provider;
 
     return Scaffold(
-      backgroundColor: const Color(0xFF0A0A0A),
+      backgroundColor: Colors.white,
       body: SafeArea(
         child: loading
-            ? const Center(child: CircularProgressIndicator(color: Color(0xFF00FFB3), strokeWidth: 2))
+            ? const Center(child: CircularProgressIndicator(color: Color(0xFF0891B2), strokeWidth: 2))
             : SingleChildScrollView(
                 padding: const EdgeInsets.all(20),
                 child: Column(
@@ -57,7 +59,7 @@ class _ProviderProfileScreenState extends State<ProviderProfileScreen> {
                                   gradient: const LinearGradient(
                                     begin: Alignment.topLeft,
                                     end: Alignment.bottomRight,
-                                    colors: [Color(0xFF00FFB3), Color(0xFF00AA77)],
+                                    colors: [Color(0xFF0891B2), Color(0xFF0055AA)],
                                   ),
                                 ),
                                 child: Center(
@@ -72,16 +74,16 @@ class _ProviderProfileScreenState extends State<ProviderProfileScreen> {
                                   bottom: 0, right: 0,
                                   child: Container(
                                     width: 26, height: 26,
-                                    decoration: const BoxDecoration(color: Color(0xFF00FFB3), shape: BoxShape.circle),
+                                    decoration: const BoxDecoration(color: Color(0xFF0891B2), shape: BoxShape.circle),
                                     child: const Icon(Icons.verified_rounded, size: 16, color: Colors.black),
                                   ),
                                 ),
                             ],
                           ),
                           const SizedBox(height: 14),
-                          Text(provider?['fullName'] ?? '', style: const TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold)),
+                          Text(provider?['fullName'] ?? '', style: const TextStyle(color: Color(0xFF1E293B), fontSize: 22, fontWeight: FontWeight.bold)),
                           const SizedBox(height: 4),
-                          Text(provider?['email'] ?? '', style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 13)),
+                          Text(provider?['email'] ?? '', style: TextStyle(color: Colors.grey.shade500, fontSize: 13)),
                           const SizedBox(height: 8),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
@@ -89,7 +91,7 @@ class _ProviderProfileScreenState extends State<ProviderProfileScreen> {
                               const Icon(Icons.star_rounded, size: 16, color: Color(0xFFFFD600)),
                               const SizedBox(width: 4),
                               Text('${provider?['rating'] ?? 0} · ${provider?['totalReviews'] ?? 0} reviews',
-                                style: TextStyle(color: Colors.white.withOpacity(0.5), fontSize: 13)),
+                                style: TextStyle(color: Colors.grey.shade500, fontSize: 13)),
                             ],
                           ),
                         ],
@@ -101,17 +103,17 @@ class _ProviderProfileScreenState extends State<ProviderProfileScreen> {
                     Container(
                       padding: const EdgeInsets.all(20),
                       decoration: BoxDecoration(
-                        color: const Color(0xFF141414),
+                        color: Colors.grey.shade50,
                         borderRadius: BorderRadius.circular(20),
-                        border: Border.all(color: Colors.white.withOpacity(0.05)),
+                        border: Border.all(color: Colors.grey.shade200),
                       ),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: [
                           _Stat('Bookings', '${profileData?['_count']?['bookings'] ?? 0}'),
-                          Container(width: 1, height: 30, color: Colors.white.withOpacity(0.06)),
+                          Container(width: 1, height: 30, color: Colors.grey.shade200),
                           _Stat('Reviews', '${profileData?['_count']?['reviews'] ?? 0}'),
-                          Container(width: 1, height: 30, color: Colors.white.withOpacity(0.06)),
+                          Container(width: 1, height: 30, color: Colors.grey.shade200),
                           _Stat('Services', '${(profileData?['services'] as List?)?.length ?? 0}'),
                         ],
                       ),
@@ -124,14 +126,14 @@ class _ProviderProfileScreenState extends State<ProviderProfileScreen> {
                         width: double.infinity,
                         padding: const EdgeInsets.all(20),
                         decoration: BoxDecoration(
-                          color: const Color(0xFF141414),
+                          color: Colors.grey.shade50,
                           borderRadius: BorderRadius.circular(20),
-                          border: Border.all(color: Colors.white.withOpacity(0.05)),
+                          border: Border.all(color: Colors.grey.shade200),
                         ),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Text('My Services', style: TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.bold)),
+                            const Text('My Services', style: TextStyle(color: Color(0xFF1E293B), fontSize: 15, fontWeight: FontWeight.bold)),
                             const SizedBox(height: 14),
                             ...(profileData!['services'] as List).map((s) => Padding(
                               padding: const EdgeInsets.only(bottom: 10),
@@ -140,14 +142,14 @@ class _ProviderProfileScreenState extends State<ProviderProfileScreen> {
                                   Container(
                                     width: 36, height: 36,
                                     decoration: BoxDecoration(
-                                      color: const Color(0xFF00FFB3).withOpacity(0.1),
+                                      color: const Color(0xFF0891B2).withOpacity(0.1),
                                       borderRadius: BorderRadius.circular(10),
                                     ),
-                                    child: const Icon(Icons.home_repair_service_rounded, color: Color(0xFF00FFB3), size: 16),
+                                    child: const Icon(Icons.home_repair_service_rounded, color: Color(0xFF0891B2), size: 16),
                                   ),
                                   const SizedBox(width: 10),
-                                  Expanded(child: Text(s['service']['name'], style: const TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.w500))),
-                                  Text('\$${s['price']}', style: const TextStyle(color: Color(0xFF00FFB3), fontSize: 14, fontWeight: FontWeight.bold)),
+                                  Expanded(child: Text(s['service']['name'], style: const TextStyle(color: Color(0xFF1E293B), fontSize: 13, fontWeight: FontWeight.w500))),
+                                  Text('\$${s['price']}', style: const TextStyle(color: Color(0xFF0891B2), fontSize: 14, fontWeight: FontWeight.bold)),
                                 ],
                               ),
                             )),
@@ -159,15 +161,15 @@ class _ProviderProfileScreenState extends State<ProviderProfileScreen> {
 
                     // Menu items
                     _MenuSection(items: [
-                      _MenuTile(icon: Icons.calendar_month_rounded, label: 'My Bookings', color: const Color(0xFF00FFB3), onTap: () => context.go('/provider/bookings')),
-                      _MenuTile(icon: Icons.notifications_rounded, label: 'Notifications', color: const Color(0xFF00D4FF), onTap: () => context.go('/provider/notifications')),
+                      _MenuTile(icon: Icons.calendar_month_rounded, label: 'My Bookings', color: const Color(0xFF0891B2), onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const ProviderBookingsScreen()))),
+                      _MenuTile(icon: Icons.notifications_rounded, label: 'Notifications', color: const Color(0xFF00D4FF), onTap: () =>  Navigator.push(context, MaterialPageRoute(builder: (_) => const ProviderNotificationsScreen()))),
                       _MenuTile(icon: Icons.star_rounded, label: 'My Reviews', color: const Color(0xFFFFD600), onTap: () {}),
                     ]),
                     const SizedBox(height: 14),
 
                     // Logout
                     GestureDetector(
-                      onTap: () async { await auth.logout(); if (context.mounted) context.go('/role'); },
+                      onTap: () async { await auth.logout(); if (context.mounted) Navigator.pushReplacementNamed(context, '/role'); },
                       child: Container(
                         width: double.infinity,
                         padding: const EdgeInsets.all(16),
@@ -190,7 +192,7 @@ class _ProviderProfileScreenState extends State<ProviderProfileScreen> {
                 ),
               ),
       ),
-      bottomNavigationBar: const ProviderBottomNav(currentIndex: 3),
+      
     );
   }
 }
@@ -202,9 +204,9 @@ class _Stat extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Column(
     children: [
-      Text(value, style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold)),
+      Text(value, style: const TextStyle(color: Color(0xFF1E293B), fontSize: 20, fontWeight: FontWeight.bold)),
       const SizedBox(height: 2),
-      Text(label, style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 11)),
+      Text(label, style: TextStyle(color: Colors.grey.shade500, fontSize: 11)),
     ],
   );
 }
@@ -216,9 +218,9 @@ class _MenuSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Container(
     decoration: BoxDecoration(
-      color: const Color(0xFF141414),
+      color: Colors.grey.shade50,
       borderRadius: BorderRadius.circular(20),
-      border: Border.all(color: Colors.white.withOpacity(0.05)),
+      border: Border.all(color: Colors.grey.shade200),
     ),
     child: Column(children: items),
   );
@@ -242,8 +244,8 @@ class _MenuTile extends StatelessWidget {
             decoration: BoxDecoration(color: color.withOpacity(0.1), borderRadius: BorderRadius.circular(10)),
             child: Icon(icon, size: 16, color: color)),
           const SizedBox(width: 12),
-          Expanded(child: Text(label, style: const TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w500))),
-          Icon(Icons.arrow_forward_ios_rounded, size: 12, color: Colors.white.withOpacity(0.2)),
+          Expanded(child: Text(label, style: const TextStyle(color: Color(0xFF1E293B), fontSize: 14, fontWeight: FontWeight.w500))),
+          Icon(Icons.arrow_forward_ios_rounded, size: 12, color: Colors.grey.shade300),
         ],
       ),
     ),

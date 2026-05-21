@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:connectivity_plus/connectivity_plus.dart';
 import 'api_service.dart';
 
 class AuthService extends ChangeNotifier {
@@ -21,7 +20,7 @@ class AuthService extends ChangeNotifier {
   String? get error => _error;
   bool get isLoggedIn => _token != null;
   bool get isProvider => _userType == 'provider';
-   bool get loaded => _loaded;
+  bool get loaded => _loaded;
 
   AuthService() {
     _loadFromStorage();
@@ -50,7 +49,7 @@ class AuthService extends ChangeNotifier {
           debugPrint('Error parsing provider data: $e');
         }
       }
-       _loaded = true;
+      _loaded = true;
 
       notifyListeners();
     } catch (e) {
@@ -58,27 +57,10 @@ class AuthService extends ChangeNotifier {
     }
   }
 
-  Future<bool> _checkConnectivity() async {
-    try {
-      final result = await Connectivity().checkConnectivity();
-      return !result.contains(ConnectivityResult.none);
-    } catch (e) {
-      debugPrint('Connectivity check failed: $e');
-      return true;
-    }
-  }
-
   Future<Map<String, dynamic>> login(String email, String password) async {
     _isLoading = true;
     _error = null;
     notifyListeners();
-
-    if (!await _checkConnectivity()) {
-      _isLoading = false;
-      _error = 'No internet connection. Please enable WiFi or mobile data.';
-      notifyListeners();
-      return {'success': false, 'message': _error};
-    }
 
     try {
       debugPrint('🔐 Login attempt: $email');
@@ -117,13 +99,6 @@ class AuthService extends ChangeNotifier {
     _error = null;
     notifyListeners();
 
-    if (!await _checkConnectivity()) {
-      _isLoading = false;
-      _error = 'No internet connection. Please enable WiFi or mobile data.';
-      notifyListeners();
-      return {'success': false, 'message': _error};
-    }
-
     try {
       debugPrint('🔐 Provider login attempt: $email');
       final res = await ApiService.post('/auth/provider/login', {
@@ -161,19 +136,12 @@ class AuthService extends ChangeNotifier {
     _error = null;
     notifyListeners();
 
-    if (!await _checkConnectivity()) {
-      _isLoading = false;
-      _error = 'No internet connection. Please enable WiFi or mobile data.';
-      notifyListeners();
-      return {'success': false, 'message': _error};
-    }
-
     try {
       debugPrint('📝 Registration attempt: ${data['email']}');
       final res = await ApiService.post('/auth/register', {
         'fullName': data['fullName'],
         'email': data['email']?.trim(),
-        'phone': data['phone']?.trim(), // fixed: trim phone like email
+        'phone': data['phone']?.trim(),
         'password': data['password'],
       });
 
@@ -183,7 +151,7 @@ class AuthService extends ChangeNotifier {
       return {
         'success': true,
         'userId': res['userId'],
-        'emailSent': res['emailSent'] ?? true, // forward email delivery status
+        'emailSent': res['emailSent'] ?? true,
       };
 
     } catch (e) {
@@ -201,13 +169,6 @@ class AuthService extends ChangeNotifier {
     _isLoading = true;
     _error = null;
     notifyListeners();
-
-    if (!await _checkConnectivity()) {
-      _isLoading = false;
-      _error = 'No internet connection.';
-      notifyListeners();
-      return {'success': false, 'message': _error};
-    }
 
     try {
       debugPrint('🔢 OTP verification: user $userId');
@@ -245,13 +206,6 @@ class AuthService extends ChangeNotifier {
     _isLoading = true;
     _error = null;
     notifyListeners();
-
-    if (!await _checkConnectivity()) {
-      _isLoading = false;
-      _error = 'No internet connection.';
-      notifyListeners();
-      return {'success': false, 'message': _error};
-    }
 
     try {
       debugPrint('🔑 Forgot password: $email');

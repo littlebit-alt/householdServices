@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../services/api_service.dart';
+import '../../widgets/bottom_nav.dart';
+import '../booking/booking_form_screen.dart';
 
 class ProviderDetailScreen extends StatefulWidget {
   final int providerId;
@@ -52,7 +54,8 @@ class _ProviderDetailScreenState extends State<ProviderDetailScreen> {
                           child: Row(
                             children: [
                               GestureDetector(
-                                onTap: () => context.go('/providers'),
+                                onTap: () => Navigator.pop(context),
+
                                 child: const Icon(
                                     Icons.arrow_back_ios_new_rounded,
                                     size: 20,
@@ -223,8 +226,11 @@ class _ProviderDetailScreenState extends State<ProviderDetailScreen> {
                                         ),
                                         const SizedBox(height: 6),
                                         GestureDetector(
-                                          onTap: () => context.go(
-                                              '/book/${widget.providerId}/${ps['service']['id']}'),
+                                          onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => BookingFormScreen(
+  providerId: widget.providerId,
+  serviceId: ps['service']['id'],
+))),
+
                                           child: Container(
                                             padding: const EdgeInsets.symmetric(
                                                 horizontal: 12, vertical: 6),

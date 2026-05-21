@@ -42,16 +42,16 @@ class _ProviderNotificationsScreenState extends State<ProviderNotificationsScree
 
   Color _getColor(String type) {
     switch (type) {
-      case 'NEW_BOOKING': return const Color(0xFF00FFB3);
+      case 'NEW_BOOKING': return const Color(0xFF0891B2);
       case 'BOOKING_UPDATE': return const Color(0xFF00D4FF);
-      default: return Colors.white.withOpacity(0.5);
+      default: return Colors.grey.shade500;
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF0A0A0A),
+      backgroundColor: Colors.white,
       body: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -61,21 +61,21 @@ class _ProviderNotificationsScreenState extends State<ProviderNotificationsScree
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text('Notifications', style: TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold)),
-                  Text('${notifications.where((n) => !n['isRead']).length} unread', style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 14)),
+                  const Text('Notifications', style: TextStyle(color: Color(0xFF1E293B), fontSize: 24, fontWeight: FontWeight.bold)),
+                  Text('${notifications.where((n) => !n['isRead']).length} unread', style: TextStyle(color: Colors.grey.shade500, fontSize: 14)),
                 ],
               ),
             ),
             Expanded(
               child: loading
-                  ? const Center(child: CircularProgressIndicator(color: Color(0xFF00FFB3), strokeWidth: 2))
+                  ? const Center(child: CircularProgressIndicator(color: Color(0xFF0891B2), strokeWidth: 2))
                   : notifications.isEmpty
                       ? Center(child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Icon(Icons.notifications_off_rounded, size: 48, color: Colors.white.withOpacity(0.1)),
+                            Icon(Icons.notifications_off_rounded, size: 48, color: Colors.grey.shade300),
                             const SizedBox(height: 12),
-                            Text('No notifications', style: TextStyle(color: Colors.white.withOpacity(0.3))),
+                            Text('No notifications', style: TextStyle(color: Colors.grey.shade400)),
                           ],
                         ))
                       : ListView.builder(
@@ -91,9 +91,9 @@ class _ProviderNotificationsScreenState extends State<ProviderNotificationsScree
                                 margin: const EdgeInsets.only(bottom: 10),
                                 padding: const EdgeInsets.all(16),
                                 decoration: BoxDecoration(
-                                  color: isRead ? const Color(0xFF111111) : const Color(0xFF141414),
+                                  color: isRead ? Colors.grey.shade50 : Colors.grey.shade100,
                                   borderRadius: BorderRadius.circular(18),
-                                  border: Border.all(color: isRead ? Colors.white.withOpacity(0.03) : color.withOpacity(0.15)),
+                                  border: Border.all(color: isRead ? Colors.grey.shade200 : color.withOpacity(0.3)),
                                 ),
                                 child: Row(
                                   children: [
@@ -110,9 +110,9 @@ class _ProviderNotificationsScreenState extends State<ProviderNotificationsScree
                                       child: Column(
                                         crossAxisAlignment: CrossAxisAlignment.start,
                                         children: [
-                                          Text(n['title'], style: TextStyle(color: isRead ? Colors.white.withOpacity(0.5) : Colors.white, fontSize: 14, fontWeight: FontWeight.w600)),
+                                          Text(n['title'], style: TextStyle(color: isRead ? Colors.grey.shade500 : const Color(0xFF1E293B), fontSize: 14, fontWeight: FontWeight.w600)),
                                           const SizedBox(height: 3),
-                                          Text(n['body'], style: TextStyle(color: Colors.white.withOpacity(0.35), fontSize: 12, height: 1.4)),
+                                          Text(n['body'], style: TextStyle(color: Colors.grey.shade400, fontSize: 12, height: 1.4)),
                                         ],
                                       ),
                                     ),
@@ -128,7 +128,6 @@ class _ProviderNotificationsScreenState extends State<ProviderNotificationsScree
           ],
         ),
       ),
-      bottomNavigationBar: const ProviderBottomNav(currentIndex: 2),
     );
   }
 }

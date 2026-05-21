@@ -111,7 +111,8 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
       });
       if (!mounted) return;
      showSuccess(context, 'Booking created successfully!');
-      context.go('/bookings');
+      Navigator.pop(context);
+      Navigator.pop(context);
     } catch (e) {
       if (!mounted) return;
       showError(context, e.toString().replaceAll('Exception: ', ''));
@@ -133,7 +134,8 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
               child: Row(
                 children: [
                   GestureDetector(
-                    onTap: () => context.go('/providers/${widget.providerId}'),
+                    onTap: () => Navigator.pop(context),
+
                     child: const Icon(Icons.arrow_back_ios_new_rounded,
                         size: 20, color: Color(0xFF1E293B)),
                   ),
